@@ -1,0 +1,2 @@
+// New Country + New Device (T1078)
+# Use the Elastic 'New Terms' rule type on [user.name, source.geo.country_iso_code, okta.device.id].

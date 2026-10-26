@@ -1,0 +1,2 @@
+// Spray Success (T1110.003 → T1078)
+# Run Password Spraying, then FROM logs-okta.system-* | WHERE event.outcome == "success" AND source.ip IN (<spraying IPs>)

@@ -1,0 +1,5 @@
+// Terminated / Dormant Account (T1078.004)
+FROM logs-okta.system-*
+| WHERE event.outcome == "success"
+| ENRICH hr-terminated-users ON user.name WITH end_date
+| WHERE end_date IS NOT NULL AND @timestamp > end_date

@@ -1,0 +1,6 @@
+// Success After Brute Force (T1110 → T1078)
+FROM logs-okta.system-* METADATA _id
+| WHERE event.action == "user.session.start"
+| STATS fails = COUNT(event.outcome == "failure" OR NULL), oks = COUNT(event.outcome == "success" OR NULL)
+    BY user.name, source.ip, bucket = DATE_TRUNC(30 minutes, @timestamp)
+| WHERE fails >= 10 AND oks > 0

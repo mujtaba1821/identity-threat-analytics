@@ -1,0 +1,5 @@
+// MFA Fatigue (T1621)
+FROM logs-okta.system-*
+| WHERE event.action == "user.mfa.okta_verify.deny_push"
+| STATS denied = COUNT(*) BY user.name, bucket = DATE_TRUNC(20 minutes, @timestamp)
+| WHERE denied >= 5

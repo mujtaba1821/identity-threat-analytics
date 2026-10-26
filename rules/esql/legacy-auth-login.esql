@@ -1,0 +1,4 @@
+// Legacy Auth Login (T1078.004)
+FROM logs-o365.audit-*
+| WHERE event.outcome == "success" AND o365.audit.ExtendedProperties.UserAgent RLIKE ".*(IMAP|POP|SMTP).*"
+    AND NOT CIDR_MATCH(source.ip, "198.51.100.0/24")

@@ -1,0 +1,4 @@
+// Risky MFA Registration (T1098.005)
+FROM logs-okta.system-*
+| WHERE event.action == "user.mfa.factor.activate"
+    AND (source.as.organization.name RLIKE ".*(Hosting|Cloud|VPS).*" OR okta.security_context.is_proxy == true)

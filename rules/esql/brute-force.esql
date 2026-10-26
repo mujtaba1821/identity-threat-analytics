@@ -1,0 +1,7 @@
+// Brute Force (T1110.001)
+FROM logs-okta.system-*
+| WHERE event.action == "user.session.start" AND event.outcome == "failure"
+    AND okta.outcome.reason == "INVALID_CREDENTIALS"
+| EVAL bucket = DATE_TRUNC(10 minutes, @timestamp)
+| STATS failures = COUNT(*) BY user.name, source.ip, bucket
+| WHERE failures >= 10
