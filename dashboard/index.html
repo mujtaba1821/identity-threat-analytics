@@ -1,0 +1,377 @@
+<title>Identity Threat Analytics</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: SOC case file. Thesis (tuning result) → incident queue with drill-down → tuning evidence → activity → coverage → rule library */
+:root{
+  --bg:#eef1f4; --panel:#ffffff; --sunk:#f5f7f9; --ink:#132029; --muted:#5a6774; --line:#d6dde4;
+  --accent:#1d5fae; --accent-soft:#e3edf9;
+  --crit:#b42318; --high:#c2570c; --med:#9a7300; --ok:#2f7a55;
+  --crit-bg:#fde7e4; --high-bg:#fdecd9; --med-bg:#f8f0cc; --ok-bg:#e1f2e8;
+  --display:"Archivo",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e161e; --panel:#151f2a; --sunk:#111a23; --ink:#e3e9ef; --muted:#93a0ae; --line:#26323f;
+  --accent:#73aaf0; --accent-soft:#1a2b40;
+  --crit:#ff7b6f; --high:#f5a15b; --med:#e2c35c; --ok:#6ec796;
+  --crit-bg:#3b1a18; --high-bg:#3a2616; --med-bg:#342c12; --ok-bg:#15301f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e161e; --panel:#151f2a; --sunk:#111a23; --ink:#e3e9ef; --muted:#93a0ae; --line:#26323f;
+  --accent:#73aaf0; --accent-soft:#1a2b40;
+  --crit:#ff7b6f; --high:#f5a15b; --med:#e2c35c; --ok:#6ec796;
+  --crit-bg:#3b1a18; --high-bg:#3a2616; --med-bg:#342c12; --ok-bg:#15301f; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body)}
+.wrap{max-width:1180px;margin:0 auto;padding-block:36px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:36px}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+h1{font:800 clamp(32px,5.4vw,52px)/1.04 var(--display);margin:0;letter-spacing:-.015em;text-wrap:balance}
+h2{font:700 21px/1.2 var(--display);margin:0;text-wrap:balance}
+h3{font:700 16px var(--display);margin:0}
+p{margin:0}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+header{display:grid;gap:10px}
+.lede{color:var(--muted);max-width:70ch;font-size:16px}
+.byline{font:13px var(--mono);color:var(--muted)}
+section{display:grid;gap:14px}
+.wrap>*,section>*,.detail>*,.detail>div>*,.pad>*,.rdetail>*,.inc-grid>*,.grid2>*{min-width:0}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:8px 20px;flex-wrap:wrap}
+.sec-head p{font-size:14px;color:var(--muted);max-width:62ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;min-width:0}
+
+/* thesis */
+.thesis{display:grid;grid-template-columns:1.25fr 1fr;gap:0}
+.funnel{padding:24px;display:grid;gap:18px;border-right:1px solid var(--line)}
+.frow>*{min-width:0}.frow{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;align-items:center}
+.frow .lab{font:600 12px var(--mono);color:var(--muted)}
+.fbar{height:34px;border-radius:4px;display:flex;align-items:center;padding:0 10px;font:600 14px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:clip}
+@media (max-width:480px){.fbar{font-size:12px;padding:0 8px}.frow{grid-template-columns:58px minmax(0,1fr)}}
+.fbar.v1{background:var(--crit-bg);color:var(--crit);width:100%}
+.fbar.v2{background:var(--ok-bg);color:var(--ok);min-width:max-content;overflow:visible}
+.funnel .sum{font-size:14px;color:var(--muted);max-width:56ch}
+.kpis{display:grid;grid-template-columns:1fr 1fr}
+.kpi{padding:18px 20px;border-bottom:1px solid var(--line);border-left:1px solid var(--line)}
+.kpi:nth-child(odd){border-left:0}.kpi:nth-last-child(-n+2){border-bottom:0}
+.kpi b{display:block;font:800 30px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.kpi b small{font:600 14px var(--mono);color:var(--muted);margin-left:4px}
+.kpi span{font:12px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* chips */
+.sev{display:inline-block;font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:3px;white-space:nowrap}
+.sev.Critical{color:var(--crit);background:var(--crit-bg)} .sev.High{color:var(--high);background:var(--high-bg)} .sev.Medium{color:var(--med);background:var(--med-bg)}
+.tag{display:inline-block;font:500 11.5px var(--mono);color:var(--accent);background:var(--accent-soft);padding:2px 7px;border-radius:3px;white-space:nowrap}
+
+/* incidents */
+.inc-grid{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start}
+.queue{display:grid;gap:8px}
+.qitem{all:unset;box-sizing:border-box;display:grid;grid-template-columns:4px 1fr auto;gap:0 12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px 12px 0;cursor:pointer;min-width:0}
+.qitem:hover{border-color:var(--muted)}
+.qitem:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.qitem[aria-selected="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.qitem .stripe{grid-row:1/4;border-radius:0 3px 3px 0}
+.qitem .t{font:600 14px/1.3 var(--body);min-width:0}
+.qitem .meta{font:12px var(--mono);color:var(--muted);grid-column:2/4}
+.qitem .score{font:800 22px var(--display);text-align:right;grid-row:1/3;align-self:center}
+.detail{padding:22px;display:grid;gap:18px}
+.d-head{display:grid;gap:8px}
+.d-head h3{font-size:22px;line-height:1.2;text-wrap:balance}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.facts div{background:var(--sunk);padding:10px 12px;min-width:0}
+.facts span{display:block;font:11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.facts b{font:600 14px var(--mono);overflow-wrap:anywhere}
+.good{color:var(--ok)} .bad{color:var(--crit)}
+.timeline{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
+.timeline table{border-collapse:collapse;width:100%;min-width:720px;font-size:13px}
+.timeline th{font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--sunk)}
+.timeline td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-family:var(--mono);font-size:12.5px}
+.timeline tr:last-child td{border-bottom:0}
+.timeline tr.atk td:first-child{box-shadow:inset 3px 0 0 var(--crit)}
+.timeline tr.alert td{background:var(--accent-soft);font-family:var(--body);font-size:13px}
+.timeline tr.gap td{color:var(--muted);text-align:center;font-style:italic}
+.res-ok{color:var(--ok);font-weight:600}.res-fail{color:var(--crit);font-weight:600}
+.play{display:grid;gap:8px;margin:0;padding-left:20px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font:12px var(--mono);color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+
+/* tuning */
+.tablebox{overflow-x:auto}
+.tune{border-collapse:collapse;width:100%;min-width:860px;font-size:14px}
+.tune th{font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tune td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tune tr:last-child td{border-bottom:0}
+.tune td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.vol{display:grid;gap:3px;min-width:150px}
+.vol div{height:7px;border-radius:2px}
+.vol .a{background:var(--crit);opacity:.75}.vol .b{background:var(--ok)}
+.arrow{color:var(--muted);margin:0 4px}
+.lesson{color:var(--muted);font-size:13.5px;max-width:46ch}
+
+/* activity */
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+.pad{padding:18px;display:grid;gap:12px}
+svg text{fill:var(--muted);font:10.5px var(--mono)}
+.heat{display:grid;grid-template-columns:30px repeat(24,minmax(0,1fr));gap:2px;font:10px var(--mono);color:var(--muted)}
+.heat div{aspect-ratio:1;border-radius:2px;max-width:100%}
+.heat .l{aspect-ratio:auto;display:flex;align-items:center}
+.risk{display:grid;gap:10px}
+.rrow{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center}
+.rrow .bar{grid-column:1/-1;height:6px;background:var(--sunk);border-radius:3px;overflow:hidden}
+.rrow .bar div{height:100%;border-radius:3px}
+.rrow small{color:var(--muted);font-size:12.5px}
+
+/* coverage */
+.attack{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.tac{display:grid;gap:8px;align-content:start}
+.tac h3{font:600 12px var(--mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding-bottom:6px;border-bottom:2px solid var(--accent)}
+.tech{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:10px 12px;display:grid;gap:2px}
+.tech b{font:600 12px var(--mono);color:var(--accent)}
+.tech span{font-size:13.5px}
+
+/* rules */
+.lib{display:grid;grid-template-columns:260px 1fr;min-height:420px}
+.rlist{border-right:1px solid var(--line);display:grid;align-content:start;padding:8px}
+.rbtn{all:unset;box-sizing:border-box;display:grid;gap:1px;padding:9px 12px;border-radius:5px;cursor:pointer}
+.rbtn:hover{background:var(--sunk)}
+.rbtn:focus-visible{outline:2px solid var(--accent)}
+.rbtn[aria-selected="true"]{background:var(--accent-soft)}
+.rbtn b{font:600 14px var(--body)} .rbtn span{font:11.5px var(--mono);color:var(--muted)}
+.rdetail{padding:20px;display:grid;gap:14px;align-content:start;min-width:0}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tab{all:unset;cursor:pointer;padding:8px 12px;font:600 13px var(--mono);color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--accent);border-color:var(--accent)}
+.tab:focus-visible{outline:2px solid var(--accent)}
+.code{position:relative}
+.code pre{margin:0;background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:14px;overflow-x:auto;font:12.5px/1.55 var(--mono);white-space:pre}
+.copy{position:absolute;top:8px;right:8px;font:600 12px var(--mono);background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:4px 10px;cursor:pointer}
+.copy:focus-visible{outline:2px solid var(--accent)}
+.note{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:18px;max-width:82ch;display:grid;gap:8px}
+
+@media (max-width:900px){
+  .thesis{grid-template-columns:1fr}.funnel{border-right:0;border-bottom:1px solid var(--line)}
+  .inc-grid,.grid2,.lib{grid-template-columns:1fr}
+  .rlist{border-right:0;border-bottom:1px solid var(--line);grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  .attack{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:480px){.attack{grid-template-columns:1fr}.kpi b{font-size:24px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Detection Engineering · Identity Threats · MITRE ATT&amp;CK</div>
+    <h1>Identity Threat Analytics</h1>
+    <p class="lede">Nine detections hunt account attacks across 30 days of Okta / Entra ID sign-in logs. Each rule was scored against ground truth, tuned until the noise was gone, and correlated into incidents an analyst can work from start to finish.</p>
+    <div class="byline">Mujtaba Ali · Penn State, Cybersecurity Analytics &amp; Operations · October 2026 · Python, pandas, KQL, ES|QL, Sigma</div>
+  </header>
+
+  <div class="panel thesis">
+    <div class="funnel">
+      <h2>Same attacks caught. 97.6% fewer alerts.</h2>
+      <div style="display:grid;gap:10px">
+        <div class="frow"><span class="lab">v1 naive</span><div class="fbar v1" id="f1"></div></div>
+        <div class="frow"><span class="lab">v2 tuned</span><div><div class="fbar v2" id="f2"></div></div></div>
+      </div>
+      <p class="sum" id="fsum"></p>
+    </div>
+    <div class="kpis" id="kpis"></div>
+  </div>
+
+  <section>
+    <div class="sec-head"><h2>Incident queue</h2><p>19 tuned alerts correlate into incidents by shared account or attacker subnet within 24 hours. Select one to see the evidence.</p></div>
+    <div class="inc-grid">
+      <div class="queue" id="queue" role="listbox" aria-label="Incidents"></div>
+      <div class="panel detail" id="detail"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>What tuning fixed</h2><p>Every rule was first written the obvious way (v1), measured against labeled attacks, then fixed (v2). The false positives each fix removed are real SOC noise sources.</p></div>
+    <div class="panel tablebox"><table class="tune">
+      <thead><tr><th>Detection</th><th>ATT&amp;CK</th><th>Alert volume</th><th>Alerts</th><th>False pos.</th><th>Precision</th><th>Lesson</th></tr></thead>
+      <tbody id="tune"></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Activity</h2><p>Times in US Eastern. Attack traffic is a small fraction of volume, which is why rules have to be precise.</p></div>
+    <div class="grid2">
+      <div class="panel pad">
+        <div class="sec-head"><h3>Sign-ins per day</h3>
+          <div class="legend"><span><i style="background:var(--ok)"></i>Success</span><span><i style="background:var(--med)"></i>Benign failure</span><span><i style="background:var(--crit)"></i>Attack event</span></div></div>
+        <div id="daily" style="overflow-x:auto"></div>
+      </div>
+      <div class="panel pad">
+        <h3>Failed sign-ins by hour</h3>
+        <div class="heat" id="heat"></div>
+        <p class="muted" style="font-size:13px">Workday failures are users mistyping. The dark night cells are the attacks.</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="panel pad">
+        <h3>Account risk</h3>
+        <div class="risk" id="risk"></div>
+      </div>
+      <div class="panel pad">
+        <h3>Failure rate by network type</h3>
+        <div class="risk" id="sources"></div>
+        <p class="muted" style="font-size:13px">Hosting and Tor sources fail 90%+ of the time. Network type alone is a strong enrichment signal.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>ATT&amp;CK coverage</h2><p>Techniques detected, grouped by tactic.</p></div>
+    <div class="attack" id="attack"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Rule library</h2><p>Each detection translated for Microsoft Sentinel (KQL), Elastic Security (ES|QL) and Sigma.</p></div>
+    <div class="panel lib">
+      <div class="rlist" id="rlist" role="tablist" aria-label="Rules"></div>
+      <div class="rdetail" id="rdetail"></div>
+    </div>
+  </section>
+
+  <div class="note">
+    <p><b>About the data.</b> Synthetic, generated for this project: 8,536 sign-ins from 107 accounts over 30 days, with benign noise built to trip naive rules (business travel, a Frankfurt VPN exit, mobile carrier geolocation, a password-expiry day, a helpdesk lockout, a legacy SMTP printer, an employee back from leave) and six labeled attack scenarios. Precision is measured on this data; real environments are noisier.</p>
+    <p>All IPs are from reserved ranges (RFC 5737, RFC 2544, RFC 6598). Code, data and rules: Python generator, detection engine, evaluation and exports are in the project repository.</p>
+  </div>
+</div>
+
+<script>
+const D = {"events":8536,"accounts":107,"days":31,"attack_events":166,"scenarios":6,"v1":{"total":{"alerts":783,"tp":18,"fp":765,"precision":0.023},"rules":{"BF":{"alerts":2,"tp":1,"fp":1,"precision":0.5},"PS":{"alerts":1,"tp":1,"fp":0,"precision":1.0},"PSS":{"alerts":1,"tp":1,"fp":0,"precision":1.0},"IT":{"alerts":676,"tp":4,"fp":672,"precision":0.006},"MF":{"alerts":1,"tp":1,"fp":0,"precision":1.0},"LA":{"alerts":21,"tp":1,"fp":20,"precision":0.048},"DA":{"alerts":2,"tp":1,"fp":1,"precision":0.5},"NC":{"alerts":64,"tp":6,"fp":58,"precision":0.094},"BS":{"alerts":8,"tp":1,"fp":7,"precision":0.125},"MR":{"alerts":7,"tp":1,"fp":6,"precision":0.143}},"detected":6},"v2":{"total":{"alerts":19,"tp":19,"fp":0,"precision":1.0},"rules":{"BF":{"alerts":1,"tp":1,"fp":0,"precision":1.0},"PS":{"alerts":2,"tp":2,"fp":0,"precision":1.0},"PSS":{"alerts":2,"tp":2,"fp":0,"precision":1.0},"IT":{"alerts":3,"tp":3,"fp":0,"precision":1.0},"MF":{"alerts":1,"tp":1,"fp":0,"precision":1.0},"LA":{"alerts":1,"tp":1,"fp":0,"precision":1.0},"DA":{"alerts":1,"tp":1,"fp":0,"precision":1.0},"NC":{"alerts":6,"tp":6,"fp":0,"precision":1.0},"BS":{"alerts":1,"tp":1,"fp":0,"precision":1.0},"MR":{"alerts":1,"tp":1,"fp":0,"precision":1.0}},"detected":6},"incidents":[{"id":"INC-001","title":"Brute-force takeover of d.okafor","severity":"Critical","score":90,"privileged":false,"users":["d.okafor"],"first":"2026-10-03 06:14:21","last":"2026-10-03 06:20:09","rules":["BF","NC","BS"],"true_positive":true,"scenario":"S1","ips":["198.18.44.17"],"playbook":["Block the source IP at the IdP and firewall.","Confirm with the user out-of-band before restoring access.","Reset the password, revoke all sessions and refresh tokens."],"timeline":[{"kind":"event","ts":"2026-10-03 06:13:00","user":"d.okafor","ip":"198.18.44.17","city":"Nuremberg, DE","asn":"tor","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"unknown-linux-firefox","attack":true},{"kind":"event","ts":"2026-10-03 06:13:09","user":"d.okafor","ip":"198.18.44.17","city":"Nuremberg, DE","asn":"tor","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"unknown-linux-firefox","attack":true},{"kind":"event","ts":"2026-10-03 06:13:18","user":"d.okafor","ip":"198.18.44.17","city":"Nuremberg, DE","asn":"tor","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"unknown-linux-firefox","attack":true},{"kind":"event","ts":"2026-10-03 06:13:27","user":"d.okafor","ip":"198.18.44.17","city":"Nuremberg, DE","asn":"tor","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"unknown-linux-firefox","attack":true},{"kind":"event","ts":"2026-10-03 06:13:36","user":"d.okafor","ip":"198.18.44.17","city":"Nuremberg, DE","asn":"tor","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"unknown-linux-firefox","attack":true},{"kind":"event","ts":"2026-10-03 06:13:45","user":"d.okafor","ip":"198.18.44.17","city":"Nuremberg, DE","asn":"tor","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"unknown-linux-firefox","attack":true},{"kind":"gap","ts":"2026-10-03 06:13:54","count":36},{"kind":"alert","ts":"2026-10-03 06:14:21","rule":"BF","severity":"High","detail":"46 wrong passwords in 10 min"},{"kind":"event","ts":"2026-10-03 06:19:18","user":"d.okafor","ip":"198.18.44.17","city":"Nuremberg, DE","asn":"tor","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"unknown-linux-firefox","attack":true},{"kind":"event","ts":"2026-10-03 06:19:27","user":"d.okafor","ip":"198.18.44.17","city":"Nuremberg, DE","asn":"tor","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"unknown-linux-firefox","attack":true},{"kind":"event","ts":"2026-10-03 06:19:36","user":"d.okafor","ip":"198.18.44.17","city":"Nuremberg, DE","asn":"tor","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"unknown-linux-firefox","attack":true},{"kind":"event","ts":"2026-10-03 06:19:45","user":"d.okafor","ip":"198.18.44.17","city":"Nuremberg, DE","asn":"tor","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"unknown-linux-firefox","attack":true},{"kind":"event","ts":"2026-10-03 06:20:09","user":"d.okafor","ip":"198.18.44.17","city":"Nuremberg, DE","asn":"tor","app":"Outlook","client":"Browser","result":"SUCCESS","reason":"","mfa":"not_required","device":"unknown-linux-firefox","attack":true},{"kind":"alert","ts":"2026-10-03 06:20:09","rule":"NC","severity":"High","detail":"New country DE on unseen device"},{"kind":"alert","ts":"2026-10-03 06:20:09","rule":"BS","severity":"Critical","detail":"Login succeeded after 46 failures"},{"kind":"event","ts":"2026-10-03 06:32:00","user":"d.okafor","ip":"198.18.44.17","city":"Nuremberg, DE","asn":"tor","app":"SharePoint","client":"Browser","result":"SUCCESS","reason":"","mfa":"not_required","device":"unknown-linux-firefox","attack":true}],"ttd_min":1.4,"before_compromise":true,"compromised":["d.okafor"]},{"id":"INC-002","title":"Low-and-slow password spray, account compromised + MFA persistence","severity":"Critical","score":100,"privileged":false,"users":["t.nguyen"],"first":"2026-10-08 03:22:09","last":"2026-10-08 12:12:01.590957","rules":["PS","PSS","NC","MR","IT"],"true_positive":true,"scenario":"S2","ips":["198.18.80.0/24","198.18.80.13","198.51.100.10"],"playbook":["Block the spraying /24 and add it to the IdP network blocklist.","Reset the compromised account, revoke sessions, review mailbox rules and OAuth grants.","Confirm with the user out-of-band before restoring access.","Remove the attacker-registered MFA method; require re-enrollment in person or by video.","Revoke refresh tokens; enable token protection (device-bound sessions) for admins."],"timeline":[{"kind":"event","ts":"2026-10-08 03:00:33","user":"a.abbott","ip":"198.18.80.11","city":"Bucharest, RO","asn":"hosting","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"python-requests","attack":true},{"kind":"event","ts":"2026-10-08 03:02:42","user":"j.evans","ip":"198.18.80.12","city":"Bucharest, RO","asn":"hosting","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"python-requests","attack":true},{"kind":"event","ts":"2026-10-08 03:05:03","user":"e.carter","ip":"198.18.80.13","city":"Bucharest, RO","asn":"hosting","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"python-requests","attack":true},{"kind":"event","ts":"2026-10-08 03:07:19","user":"n.rossi","ip":"198.18.80.14","city":"Bucharest, RO","asn":"hosting","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"python-requests","attack":true},{"kind":"event","ts":"2026-10-08 03:10:20","user":"p.lindqvist","ip":"198.18.80.11","city":"Bucharest, RO","asn":"hosting","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"python-requests","attack":true},{"kind":"event","ts":"2026-10-08 03:12:35","user":"b.nash","ip":"198.18.80.12","city":"Bucharest, RO","asn":"hosting","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"python-requests","attack":true},{"kind":"gap","ts":"2026-10-08 03:14:41","count":59},{"kind":"alert","ts":"2026-10-08 03:22:09","rule":"PS","severity":"High","detail":"69 accounts targeted from 4 IP(s)"},{"kind":"event","ts":"2026-10-08 04:51:23","user":"t.nguyen","ip":"198.18.80.13","city":"Bucharest, RO","asn":"hosting","app":"Outlook","client":"Browser","result":"SUCCESS","reason":"","mfa":"not_registered","device":"python-requests","attack":true},{"kind":"alert","ts":"2026-10-08 04:51:23","rule":"PSS","severity":"Critical","detail":"Login succeeded from spraying source"},{"kind":"alert","ts":"2026-10-08 04:51:23","rule":"NC","severity":"High","detail":"New country RO on unseen device"},{"kind":"event","ts":"2026-10-08 04:57:23","user":"t.nguyen","ip":"198.18.80.13","city":"Bucharest, RO","asn":"hosting","app":"Security Info Registration","client":"Browser","result":"SUCCESS","reason":"","mfa":"not_registered","device":"attacker-android","attack":true},{"kind":"alert","ts":"2026-10-08 04:57:23","rule":"MR","severity":"High","detail":"MFA method registered from hosting IP in Bucharest, RO"},{"kind":"event","ts":"2026-10-08 05:00:23","user":"t.nguyen","ip":"198.18.80.13","city":"Bucharest, RO","asn":"hosting","app":"Salesforce","client":"Browser","result":"SUCCESS","reason":"","mfa":"push_approved","device":"attacker-android","attack":true},{"kind":"event","ts":"2026-10-08 05:39:38","user":"a.upton","ip":"198.18.80.13","city":"Bucharest, RO","asn":"hosting","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"python-requests","attack":true},{"kind":"event","ts":"2026-10-08 05:42:35","user":"k.romano","ip":"198.18.80.14","city":"Bucharest, RO","asn":"hosting","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"python-requests","attack":true},{"kind":"event","ts":"2026-10-08 05:44:24","user":"f.park","ip":"198.18.80.11","city":"Bucharest, RO","asn":"hosting","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"python-requests","attack":true},{"kind":"event","ts":"2026-10-08 05:46:56","user":"r.alvarez","ip":"198.18.80.12","city":"Bucharest, RO","asn":"hosting","app":"Outlook","client":"Browser","result":"FAILURE","reason":"bad_password","mfa":"","device":"python-requests","attack":true},{"kind":"event","ts":"2026-10-08 12:12:01.590957","user":"t.nguyen","ip":"198.51.100.10","city":"Teaneck, NJ","asn":"corporate","app":"Jira","client":"Browser","result":"SUCCESS","reason":"","mfa":"token","device":"t.nguyen-laptop","attack":false},{"kind":"alert","ts":"2026-10-08 12:12:01.590957","rule":"IT","severity":"Medium","detail":"Bucharest, RO to Teaneck, NJ in 432 min (1,062 km/h)"}],"ttd_min":21.6,"before_compromise":true,"compromised":["t.nguyen"]},{"id":"INC-003","title":"MFA fatigue takeover of m.reyes","severity":"Critical","score":65,"privileged":false,"users":["m.reyes"],"first":"2026-10-14 05:52:38","last":"2026-10-14 05:52:38","rules":["MF","NC"],"true_positive":true,"scenario":"S3","ips":["198.18.120.5"],"playbook":["Revoke sessions, reset password, switch push MFA to number matching.","Confirm with the user out-of-band before restoring access."],"timeline":[{"kind":"event","ts":"2026-10-14 05:38:00","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Workday","client":"Browser","result":"FAILURE","reason":"mfa_denied","mfa":"push_denied","device":"unknown-win-edge","attack":true},{"kind":"event","ts":"2026-10-14 05:39:18","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Workday","client":"Browser","result":"FAILURE","reason":"mfa_denied","mfa":"push_denied","device":"unknown-win-edge","attack":true},{"kind":"event","ts":"2026-10-14 05:40:36","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Workday","client":"Browser","result":"FAILURE","reason":"mfa_denied","mfa":"push_denied","device":"unknown-win-edge","attack":true},{"kind":"event","ts":"2026-10-14 05:41:54","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Workday","client":"Browser","result":"FAILURE","reason":"mfa_denied","mfa":"push_denied","device":"unknown-win-edge","attack":true},{"kind":"event","ts":"2026-10-14 05:43:12","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Workday","client":"Browser","result":"FAILURE","reason":"mfa_denied","mfa":"push_denied","device":"unknown-win-edge","attack":true},{"kind":"event","ts":"2026-10-14 05:44:30","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Workday","client":"Browser","result":"FAILURE","reason":"mfa_denied","mfa":"push_denied","device":"unknown-win-edge","attack":true},{"kind":"event","ts":"2026-10-14 05:45:48","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Workday","client":"Browser","result":"FAILURE","reason":"mfa_denied","mfa":"push_denied","device":"unknown-win-edge","attack":true},{"kind":"event","ts":"2026-10-14 05:47:06","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Workday","client":"Browser","result":"FAILURE","reason":"mfa_denied","mfa":"push_denied","device":"unknown-win-edge","attack":true},{"kind":"event","ts":"2026-10-14 05:48:24","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Workday","client":"Browser","result":"FAILURE","reason":"mfa_denied","mfa":"push_denied","device":"unknown-win-edge","attack":true},{"kind":"event","ts":"2026-10-14 05:49:42","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Workday","client":"Browser","result":"FAILURE","reason":"mfa_denied","mfa":"push_denied","device":"unknown-win-edge","attack":true},{"kind":"event","ts":"2026-10-14 05:51:00","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Workday","client":"Browser","result":"FAILURE","reason":"mfa_denied","mfa":"push_denied","device":"unknown-win-edge","attack":true},{"kind":"event","ts":"2026-10-14 05:52:38","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Workday","client":"Browser","result":"SUCCESS","reason":"","mfa":"push_approved","device":"unknown-win-edge","attack":true},{"kind":"alert","ts":"2026-10-14 05:52:38","rule":"MF","severity":"Critical","detail":"Approved after 11 denied pushes"},{"kind":"alert","ts":"2026-10-14 05:52:38","rule":"NC","severity":"High","detail":"New country NL on unseen device"},{"kind":"event","ts":"2026-10-14 05:59:00","user":"m.reyes","ip":"198.18.120.5","city":"Amsterdam, NL","asn":"hosting","app":"Outlook","client":"Browser","result":"SUCCESS","reason":"","mfa":"token","device":"unknown-win-edge","attack":true}],"ttd_min":14.6,"before_compromise":false,"compromised":["m.reyes"]},{"id":"INC-004","title":"Session hijack of admin s.cohen","severity":"High","score":52,"privileged":true,"users":["s.cohen"],"first":"2026-10-17 14:29:00","last":"2026-10-17 14:29:00","rules":["IT","NC"],"true_positive":true,"scenario":"S4","ips":["198.18.150.9"],"playbook":["Revoke refresh tokens; enable token protection (device-bound sessions) for admins.","Confirm with the user out-of-band before restoring access."],"timeline":[{"kind":"event","ts":"2026-10-17 13:58:00","user":"s.cohen","ip":"198.51.100.10","city":"Teaneck, NJ","asn":"corporate","app":"Azure Portal","client":"Browser","result":"SUCCESS","reason":"","mfa":"push_approved","device":"s.cohen-laptop","attack":false},{"kind":"event","ts":"2026-10-17 14:29:00","user":"s.cohen","ip":"198.18.150.9","city":"Hanoi, VN","asn":"hosting","app":"AWS Console","client":"Browser","result":"SUCCESS","reason":"","mfa":"token","device":"unknown-mac-chrome","attack":true},{"kind":"alert","ts":"2026-10-17 14:29:00","rule":"IT","severity":"Medium","detail":"Teaneck, NJ to Hanoi, VN in 31 min (25,413 km/h)"},{"kind":"alert","ts":"2026-10-17 14:29:00","rule":"NC","severity":"High","detail":"New country VN on unseen device"},{"kind":"event","ts":"2026-10-17 14:41:00","user":"s.cohen","ip":"198.18.150.9","city":"Hanoi, VN","asn":"hosting","app":"Azure Portal","client":"Browser","result":"SUCCESS","reason":"","mfa":"token","device":"unknown-mac-chrome","attack":true}],"ttd_min":0.0,"before_compromise":false,"compromised":["s.cohen"]},{"id":"INC-005","title":"Legacy IMAP spray bypassing MFA","severity":"Critical","score":100,"privileged":false,"users":["r.alvarez"],"first":"2026-10-20 08:14:15","last":"2026-10-20 12:42:40.583844","rules":["PS","PSS","LA","NC","IT"],"true_positive":true,"scenario":"S5","ips":["198.18.200.0/24","198.18.200.33","203.0.113.5"],"playbook":["Block the spraying /24 and add it to the IdP network blocklist.","Reset the compromised account, revoke sessions, review mailbox rules and OAuth grants.","Disable legacy authentication tenant-wide with Conditional Access.","Confirm with the user out-of-band before restoring access.","Revoke refresh tokens; enable token protection (device-bound sessions) for admins."],"timeline":[{"kind":"event","ts":"2026-10-20 08:00:00","user":"w.ali","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"FAILURE","reason":"bad_password","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"event","ts":"2026-10-20 08:01:35","user":"g.wade","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"FAILURE","reason":"bad_password","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"event","ts":"2026-10-20 08:03:10","user":"e.west","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"FAILURE","reason":"bad_password","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"event","ts":"2026-10-20 08:04:45","user":"e.lopez","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"FAILURE","reason":"bad_password","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"event","ts":"2026-10-20 08:06:20","user":"m.reyes","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"FAILURE","reason":"bad_password","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"event","ts":"2026-10-20 08:07:55","user":"f.park","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"FAILURE","reason":"bad_password","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"gap","ts":"2026-10-20 08:09:30","count":14},{"kind":"alert","ts":"2026-10-20 08:14:15","rule":"PS","severity":"High","detail":"24 accounts targeted from 1 IP(s)"},{"kind":"event","ts":"2026-10-20 08:31:40","user":"r.alvarez","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"SUCCESS","reason":"","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"alert","ts":"2026-10-20 08:31:40","rule":"PSS","severity":"Critical","detail":"Login succeeded from spraying source"},{"kind":"alert","ts":"2026-10-20 08:31:40","rule":"LA","severity":"High","detail":"4 legacy-protocol logins (IMAP (legacy))"},{"kind":"alert","ts":"2026-10-20 08:31:40","rule":"NC","severity":"High","detail":"New country BR on unseen device"},{"kind":"event","ts":"2026-10-20 08:33:15","user":"v.edwards","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"FAILURE","reason":"bad_password","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"event","ts":"2026-10-20 08:34:50","user":"b.xu","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"FAILURE","reason":"bad_password","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"event","ts":"2026-10-20 08:36:25","user":"g.moreno","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"FAILURE","reason":"bad_password","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"event","ts":"2026-10-20 08:38:00","user":"n.rossi","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"FAILURE","reason":"bad_password","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"event","ts":"2026-10-20 08:51:40","user":"r.alvarez","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"SUCCESS","reason":"","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"event","ts":"2026-10-20 09:11:40","user":"r.alvarez","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"SUCCESS","reason":"","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"event","ts":"2026-10-20 09:31:40","user":"r.alvarez","ip":"198.18.200.33","city":"Sao Paulo, BR","asn":"hosting","app":"Exchange Online (IMAP)","client":"IMAP (legacy)","result":"SUCCESS","reason":"","mfa":"not_supported","device":"imap-client","attack":true},{"kind":"event","ts":"2026-10-20 12:42:40.583844","user":"r.alvarez","ip":"203.0.113.5","city":"Philadelphia, PA","asn":"residential","app":"Outlook","client":"Browser","result":"SUCCESS","reason":"","mfa":"token","device":"r.alvarez-laptop","attack":false},{"kind":"alert","ts":"2026-10-20 12:42:40.583844","rule":"IT","severity":"Medium","detail":"Sao Paulo, BR to Philadelphia, PA in 191 min (2,405 km/h)"},{"kind":"event","ts":"2026-10-20 13:17:40.988287","user":"r.alvarez","ip":"198.51.100.200","city":"Ashburn, VA","asn":"corporate-vpn","app":"Workday","client":"Browser","result":"SUCCESS","reason":"","mfa":"push_approved","device":"r.alvarez-laptop","attack":false}],"ttd_min":14.2,"before_compromise":true,"compromised":["r.alvarez"]},{"id":"INC-006","title":"Terminated contractor account reused","severity":"Critical","score":65,"privileged":false,"users":["k.walsh"],"first":"2026-10-22 15:12:00","last":"2026-10-22 15:12:00","rules":["DA","NC"],"true_positive":true,"scenario":"S6","ips":["198.19.23.40"],"playbook":["Disable the account, then audit offboarding: IdP deprovisioning failed.","Confirm with the user out-of-band before restoring access."],"timeline":[{"kind":"event","ts":"2026-10-22 15:12:00","user":"k.walsh","ip":"198.19.23.40","city":"Toronto, CA","asn":"residential","app":"Salesforce","client":"Browser","result":"SUCCESS","reason":"","mfa":"push_approved","device":"k.walsh-home-pc","attack":true},{"kind":"alert","ts":"2026-10-22 15:12:00","rule":"DA","severity":"Critical","detail":"Sign-in to account terminated 2026-10-01"},{"kind":"alert","ts":"2026-10-22 15:12:00","rule":"NC","severity":"High","detail":"New country CA on unseen device"},{"kind":"event","ts":"2026-10-22 15:26:00","user":"k.walsh","ip":"198.19.23.40","city":"Toronto, CA","asn":"residential","app":"Salesforce","client":"Browser","result":"SUCCESS","reason":"","mfa":"push_approved","device":"k.walsh-home-pc","attack":true},{"kind":"event","ts":"2026-10-22 15:40:00","user":"k.walsh","ip":"198.19.23.40","city":"Toronto, CA","asn":"residential","app":"SharePoint","client":"Browser","result":"SUCCESS","reason":"","mfa":"push_approved","device":"k.walsh-home-pc","attack":true}],"ttd_min":0.0,"before_compromise":false,"compromised":["k.walsh"]}],"risk":[{"user":"t.nguyen","score":100,"title":"Account Executive (new hire)","dept":"Sales","privileged":false},{"user":"r.alvarez","score":100,"title":"Paralegal","dept":"Legal","privileged":false},{"user":"d.okafor","score":90,"title":"Senior Accountant","dept":"Finance","privileged":false},{"user":"m.reyes","score":65,"title":"Chief Financial Officer","dept":"Finance","privileged":false},{"user":"k.walsh","score":65,"title":"Contractor","dept":"Engineering","privileged":false},{"user":"s.cohen","score":52,"title":"Systems Administrator","dept":"IT","privileged":true}],"daily":{"labels":["09/26","09/27","09/28","09/29","09/30","10/01","10/02","10/03","10/04","10/05","10/06","10/07","10/08","10/09","10/10","10/11","10/12","10/13","10/14","10/15","10/16","10/17","10/18","10/19","10/20","10/21","10/22","10/23","10/24","10/25","10/26"],"success":[33,44,376,359,351,362,369,32,42,371,377,374,362,377,30,23,379,370,369,374,374,40,39,386,397,362,369,401,51,31,3],"failure":[1,3,23,17,25,104,21,2,4,27,20,26,25,26,1,0,19,33,19,12,21,5,0,18,27,27,27,21,3,2,0],"attack":[0,0,0,0,0,0,0,48,0,0,0,0,72,0,0,0,0,0,13,0,0,2,0,0,28,0,3,0,0,0,0]},"heat":[[0,0,0,0,0,0,0,0,7,8,7,5,8,10,9,5,6,8,9,2,0,0,0,0],[0,0,0,0,24,0,0,0,5,24,6,10,12,5,6,7,9,9,4,0,0,0,0,0],[0,11,0,0,0,0,0,0,5,12,9,6,14,9,9,9,5,7,10,2,0,0,0,25],[24,20,0,0,0,0,0,2,6,18,26,14,5,17,24,9,16,15,11,5,0,0,0,0],[0,0,0,0,0,0,0,0,9,10,12,7,6,7,6,10,8,8,6,0,0,0,0,0],[0,0,46,0,0,0,0,0,0,0,0,5,2,0,2,2,1,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,1,1,3,1,1,0,0,0,0,1,2,1,0,0]],"sources":[{"asn_type":"corporate","events":3280,"fail_rate":0.065},{"asn_type":"corporate-vpn","events":1524,"fail_rate":0.066},{"asn_type":"hosting","events":115,"fail_rate":0.904},{"asn_type":"mobile","events":305,"fail_rate":0.072},{"asn_type":"residential","events":3264,"fail_rate":0.068},{"asn_type":"tor","events":48,"fail_rate":0.958}],"rules":{"BF":{"name":"Brute Force","technique":"T1110.001","tactic":"Credential Access","logic":"10+ wrong passwords for one account from one IP within 10 minutes.","tuning":"Corporate egress IPs need 25+ failures. Office lockouts were the only false positives.","sigma":"title: Brute Force Against Single Account\nid: 6f1e2a40-ita-bf\nstatus: experimental\nlogsource: {product: azure, service: signinlogs}\ndetection:\n  selection: {ResultType: 50126}   # invalid username or password\n  condition: selection\n---\ntitle: Brute Force Threshold\ncorrelation:\n  type: event_count\n  rules: [6f1e2a40-ita-bf]\n  group-by: [UserPrincipalName, IPAddress]\n  timespan: 10m\n  condition: {gte: 10}\ntags: [attack.credential-access, attack.t1110.001]\nlevel: high","kql":"SigninLogs\n| where ResultType == 50126\n| summarize Failures = count(), First = min(TimeGenerated)\n    by UserPrincipalName, IPAddress, bin(TimeGenerated, 10m)\n| extend IsCorp = ipv4_is_in_any_range(IPAddress, dynamic([\"198.51.100.0/24\"]))\n| where (IsCorp and Failures >= 25) or (not(IsCorp) and Failures >= 10)","esql":"FROM logs-okta.system-*\n| WHERE event.action == \"user.session.start\" AND event.outcome == \"failure\"\n    AND okta.outcome.reason == \"INVALID_CREDENTIALS\"\n| EVAL bucket = DATE_TRUNC(10 minutes, @timestamp)\n| STATS failures = COUNT(*) BY user.name, source.ip, bucket\n| WHERE failures >= 10"},"PS":{"name":"Password Spraying","technique":"T1110.003","tactic":"Credential Access","logic":"One external /24 subnet fails against 10+ distinct accounts within 3 hours, with 80%+ of its sign-ins failing.","tuning":"v1 grouped by single IP and missed a spray rotated across 4 IPs. Grouping by /24 caught it; excluding corporate egress removed password-expiry noise.","sigma":"title: Password Spray Failure\nid: 2b7c9d11-ita-ps\nlogsource: {product: azure, service: signinlogs}\ndetection:\n  selection: {ResultType: 50126}\n  filter_corp: {IPAddress|cidr: 198.51.100.0/24}\n  condition: selection and not filter_corp\n---\ntitle: Password Spray Distinct Accounts\ncorrelation:\n  type: value_count\n  rules: [2b7c9d11-ita-ps]\n  group-by: [IPAddress]\n  timespan: 3h\n  condition: {field: UserPrincipalName, gte: 10}\ntags: [attack.credential-access, attack.t1110.003]\nlevel: high","kql":"SigninLogs\n| where not(ipv4_is_in_any_range(IPAddress, dynamic([\"198.51.100.0/24\"])))\n| extend Subnet = format_ipv4_mask(IPAddress, 24)\n| summarize Accounts = dcountif(UserPrincipalName, ResultType == 50126),\n            FailRatio = countif(ResultType != 0) * 1.0 / count(),\n            IPs = make_set(IPAddress), Hits = make_set_if(UserPrincipalName, ResultType == 0)\n    by Subnet, bin(TimeGenerated, 3h)\n| where Accounts >= 10 and FailRatio >= 0.8","esql":"FROM logs-okta.system-*\n| WHERE event.action == \"user.session.start\"\n| EVAL subnet = CONCAT(SUBSTRING(TO_STRING(source.ip), 0, LOCATE(TO_STRING(source.ip), \".\", 9)), \".0/24\")\n| STATS accounts = COUNT_DISTINCT(user.name), fails = COUNT(event.outcome == \"failure\" OR NULL), total = COUNT(*)\n    BY subnet, bucket = DATE_TRUNC(3 hours, @timestamp)\n| WHERE accounts >= 10 AND fails * 1.0 / total >= 0.8"},"PSS":{"name":"Spray Success","technique":"T1110.003 \u2192 T1078","tactic":"Initial Access","logic":"Any successful sign-in from a source that is password spraying. The spray worked.","tuning":"Escalation of Password Spraying; inherits its tuning.","sigma":"# Expressed as a join on the spray correlation output (see KQL).","kql":"let Sprayers = SigninLogs\n| extend Subnet = format_ipv4_mask(IPAddress, 24)\n| summarize Accounts = dcountif(UserPrincipalName, ResultType == 50126) by Subnet\n| where Accounts >= 10;\nSigninLogs\n| where ResultType == 0\n| extend Subnet = format_ipv4_mask(IPAddress, 24)\n| join kind=inner Sprayers on Subnet","esql":"# Run Password Spraying, then FROM logs-okta.system-* | WHERE event.outcome == \"success\" AND source.ip IN (<spraying IPs>)"},"IT":{"name":"Impossible Travel","technique":"T1078.004","tactic":"Initial Access","logic":"Consecutive successful sign-ins whose distance over time needs more than 900 km/h.","tuning":"Skip pairs involving the corporate VPN (Frankfurt exit node) or mobile carrier IPs, whose geolocation reflects the carrier hub, not the user.","sigma":"# Stateful (needs previous event per user). Use the KQL / ES|QL versions.","kql":"SigninLogs\n| where ResultType == 0\n| where not(ipv4_is_in_any_range(IPAddress, dynamic([\"198.51.100.200/31\",\"100.64.0.0/10\"])))\n| extend Lat = toreal(LocationDetails.geoCoordinates.latitude), Lon = toreal(LocationDetails.geoCoordinates.longitude)\n| sort by UserPrincipalName asc, TimeGenerated asc\n| extend PrevLat = prev(Lat), PrevLon = prev(Lon), PrevTime = prev(TimeGenerated), PrevUser = prev(UserPrincipalName)\n| where UserPrincipalName == PrevUser\n| extend Km = geo_distance_2points(Lon, Lat, PrevLon, PrevLat) / 1000,\n         Hours = max_of(datetime_diff('minute', TimeGenerated, PrevTime), 1) / 60.0\n| where Km / Hours > 900","esql":"# ES|QL has no row-lag function yet; use the Elastic 'Impossible Travel' ML job or an EQL sequence by user.name."},"MF":{"name":"MFA Fatigue","technique":"T1621","tactic":"Credential Access","logic":"An MFA push is approved after 5+ denied pushes for the same user in 20 minutes.","tuning":"No tuning needed. Accidental single denials never reach 5.","sigma":"title: MFA Push Denied\nid: 9a0f4c22-ita-mf\nlogsource: {product: azure, service: signinlogs}\ndetection:\n  selection: {ResultType: 500121}\n  condition: selection\n---\ntitle: MFA Fatigue\ncorrelation:\n  type: event_count\n  rules: [9a0f4c22-ita-mf]\n  group-by: [UserPrincipalName]\n  timespan: 20m\n  condition: {gte: 5}\ntags: [attack.credential-access, attack.t1621]\nlevel: critical","kql":"let Denials = SigninLogs\n| where ResultType == 500121\n| summarize Denied = count(), LastDeny = max(TimeGenerated) by UserPrincipalName, bin(TimeGenerated, 20m)\n| where Denied >= 5;\nSigninLogs\n| where ResultType == 0 and AuthenticationRequirement == \"multiFactorAuthentication\"\n| join kind=inner Denials on UserPrincipalName\n| where TimeGenerated between (LastDeny .. LastDeny + 10m)","esql":"FROM logs-okta.system-*\n| WHERE event.action == \"user.mfa.okta_verify.deny_push\"\n| STATS denied = COUNT(*) BY user.name, bucket = DATE_TRUNC(20 minutes, @timestamp)\n| WHERE denied >= 5"},"LA":{"name":"Legacy Auth Login","technique":"T1078.004","tactic":"Defense Evasion","logic":"Successful IMAP/POP/SMTP basic-auth sign-in from a non-corporate IP. Legacy protocols cannot do MFA.","tuning":"v1 alerted on the scan-to-email service account every day. Restricting to external IPs removed it.","sigma":"title: Legacy Authentication From External IP\nlogsource: {product: azure, service: signinlogs}\ndetection:\n  selection:\n    ResultType: 0\n    ClientAppUsed: [IMAP4, POP3, Authenticated SMTP, Exchange ActiveSync, Other clients]\n  filter_corp: {IPAddress|cidr: 198.51.100.0/24}\n  condition: selection and not filter_corp\ntags: [attack.defense-evasion, attack.t1078.004]\nlevel: high","kql":"SigninLogs\n| where ResultType == 0\n| where ClientAppUsed in (\"IMAP4\",\"POP3\",\"Authenticated SMTP\",\"Exchange ActiveSync\",\"Other clients\")\n| where not(ipv4_is_in_any_range(IPAddress, dynamic([\"198.51.100.0/24\"])))","esql":"FROM logs-o365.audit-*\n| WHERE event.outcome == \"success\" AND o365.audit.ExtendedProperties.UserAgent RLIKE \".*(IMAP|POP|SMTP).*\"\n    AND NOT CIDR_MATCH(source.ip, \"198.51.100.0/24\")"},"DA":{"name":"Terminated / Dormant Account","technique":"T1078.004","tactic":"Persistence","logic":"Any sign-in to an account HR lists as terminated, or the first sign-in after 30+ quiet days.","tuning":"v1 used a 14-day gap and flagged an employee back from leave. Joining the HR directory gives a precise signal.","sigma":"# Requires an HR/IdP directory lookup; see KQL with a watchlist.","kql":"let Terminated = _GetWatchlist('TerminatedUsers') | project UserPrincipalName = SearchKey, EndDate = todatetime(EndDate);\nSigninLogs\n| where ResultType == 0\n| join kind=inner Terminated on UserPrincipalName\n| where TimeGenerated > EndDate","esql":"FROM logs-okta.system-*\n| WHERE event.outcome == \"success\"\n| ENRICH hr-terminated-users ON user.name WITH end_date\n| WHERE end_date IS NOT NULL AND @timestamp > end_date"},"NC":{"name":"New Country + New Device","technique":"T1078","tactic":"Initial Access","logic":"Successful sign-in from a country never seen for this user, on a device never seen for this user.","tuning":"v1 used new country alone and flagged every business trip and VPN exit. Travelers bring their own laptop, attackers do not. New hires with no history are skipped.","sigma":"# Stateful baseline per user; see KQL.","kql":"let Baseline = SigninLogs\n| where TimeGenerated between (ago(30d) .. ago(1d)) and ResultType == 0\n| summarize Countries = make_set(tostring(LocationDetails.countryOrRegion)),\n            Devices = make_set(tostring(DeviceDetail.deviceId)) by UserPrincipalName;\nSigninLogs\n| where TimeGenerated > ago(1d) and ResultType == 0\n| join kind=inner Baseline on UserPrincipalName\n| where not(set_has_element(Countries, tostring(LocationDetails.countryOrRegion)))\n    and not(set_has_element(Devices, tostring(DeviceDetail.deviceId)))","esql":"# Use the Elastic 'New Terms' rule type on [user.name, source.geo.country_iso_code, okta.device.id]."},"BS":{"name":"Success After Brute Force","technique":"T1110 \u2192 T1078","tactic":"Initial Access","logic":"10+ failures from one external IP followed by a successful login for the same account within 30 minutes.","tuning":"v1 grouped by account only and fired when users fixed their own expired passwords. Requiring the same external IP removed that.","sigma":"title: Successful Login After Failures\ncorrelation:\n  type: temporal_ordered\n  rules: [6f1e2a40-ita-bf, successful-signin]\n  group-by: [UserPrincipalName, IPAddress]\n  timespan: 30m\ntags: [attack.initial-access, attack.t1078]\nlevel: critical","kql":"SigninLogs\n| where not(ipv4_is_in_any_range(IPAddress, dynamic([\"198.51.100.0/24\"])))\n| summarize Fails = countif(ResultType == 50126), Success = countif(ResultType == 0),\n            FirstOk = minif(TimeGenerated, ResultType == 0), LastFail = maxif(TimeGenerated, ResultType == 50126)\n    by UserPrincipalName, IPAddress, bin(TimeGenerated, 30m)\n| where Fails >= 10 and Success > 0 and FirstOk > LastFail","esql":"FROM logs-okta.system-* METADATA _id\n| WHERE event.action == \"user.session.start\"\n| STATS fails = COUNT(event.outcome == \"failure\" OR NULL), oks = COUNT(event.outcome == \"success\" OR NULL)\n    BY user.name, source.ip, bucket = DATE_TRUNC(30 minutes, @timestamp)\n| WHERE fails >= 10 AND oks > 0"},"MR":{"name":"Risky MFA Registration","technique":"T1098.005","tactic":"Persistence","logic":"A new MFA method is registered from a hosting-provider or Tor IP.","tuning":"v1 flagged any registration outside the office, which caught employees setting up new phones at home.","sigma":"title: MFA Method Registered From Hosting or Tor IP\nlogsource: {product: azure, service: auditlogs}\ndetection:\n  selection: {OperationName: User registered security info}\n  condition: selection\ntags: [attack.persistence, attack.t1098.005]\nlevel: high\n# enrich InitiatedBy.user.ipAddress with ASN type in the SIEM","kql":"AuditLogs\n| where OperationName == \"User registered security info\"\n| extend IP = tostring(InitiatedBy.user.ipAddress)\n| join kind=inner (ThreatIntelligenceIndicator | where Tags has_any (\"hosting\",\"tor\") | project IP = NetworkIP) on IP","esql":"FROM logs-okta.system-*\n| WHERE event.action == \"user.mfa.factor.activate\"\n    AND (source.as.organization.name RLIKE \".*(Hosting|Cloud|VPS).*\" OR okta.security_context.is_proxy == true)"}}};
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function et(ts, withDay=true){ const d = new Date(ts.replace(" ","T").slice(0,19)+"Z"); d.setUTCHours(d.getUTCHours()-4);
+  const hm = String(d.getUTCHours()).padStart(2,"0")+":"+String(d.getUTCMinutes()).padStart(2,"0");
+  return withDay ? `${MON[d.getUTCMonth()]} ${d.getUTCDate()} ${hm}` : hm; }
+const pct = x => x==null ? "—" : (x*100 >= 99.95 ? "100%" : (x*100).toFixed(1)+"%");
+const sevColor = s => ({Critical:"var(--crit)",High:"var(--high)",Medium:"var(--med)"}[s]);
+
+// thesis
+const v1 = D.v1.total, v2 = D.v2.total;
+$("f1").textContent = `${v1.alerts} alerts · ${pct(v1.precision)} precision`;
+$("f2").textContent = `${v2.alerts} alerts · ${pct(v2.precision)} precision`;
+$("f2").style.width = Math.max(v2.alerts/v1.alerts*100, 2)+"%";
+$("fsum").textContent = `v1 buried ${v1.tp} real alerts under ${v1.fp} false positives. v2 keeps every attack scenario and drops the noise to ${v2.fp}.`;
+const tps = D.incidents.filter(i=>i.true_positive);
+const before = tps.filter(i=>i.before_compromise).length;
+const comp = new Set(tps.flatMap(i=>i.compromised||[])).size;
+const ttd = tps.map(i=>i.ttd_min).sort((a,b)=>a-b); const med = (ttd[2]+ttd[3])/2;
+$("kpis").innerHTML = [
+  [`${D.v2.detected}<small>/ ${D.scenarios}</small>`,"Attack scenarios caught"],
+  [`${D.incidents.length}`,"Incidents"],
+  [`${before}<small>/ ${tps.length}</small>`,"Caught before compromise"],
+  [`${med.toFixed(0)}<small>min</small>`,"Median time to detect"],
+  [`${comp}`,"Accounts compromised"],
+  [`${D.events.toLocaleString()}`,"Sign-ins analyzed"],
+].map(k=>`<div class="kpi"><b>${k[0]}</b><span>${k[1]}</span></div>`).join("");
+
+// incidents
+let sel = D.incidents.reduce((a,b)=> b.timeline.length > a.timeline.length && b.severity==="Critical" ? b : a, D.incidents[0]).id;
+function renderQueue(){
+  $("queue").innerHTML = D.incidents.map(i=>`<button class="qitem" role="option" aria-selected="${i.id===sel}" data-id="${i.id}">
+    <span class="stripe" style="background:${sevColor(i.severity)}"></span>
+    <span class="t">${esc(i.title)}</span><span class="score" style="color:${sevColor(i.severity)}">${i.score}</span>
+    <span class="meta">${i.id} · ${et(i.first)} · <span class="sev ${i.severity}">${i.severity}</span></span></button>`).join("");
+  document.querySelectorAll(".qitem").forEach(b=>b.onclick=()=>{sel=b.dataset.id;renderQueue();renderDetail();});
+}
+function renderDetail(){
+  const i = D.incidents.find(x=>x.id===sel);
+  const rules = i.rules.map(r=>`<span class="tag" title="${esc(D.rules[r].name)}">${esc(D.rules[r].technique)}</span>`).join(" ");
+  const rows = i.timeline.map(t=>{
+    if(t.kind==="gap") return `<tr class="gap"><td colspan="7">… ${t.count} more failed attempts …</td></tr>`;
+    if(t.kind==="alert") return `<tr class="alert"><td class="mono">${et(t.ts,false)}</td><td colspan="6"><span class="sev ${t.severity}">${t.severity}</span> <b>${esc(D.rules[t.rule].name)}</b> · ${esc(t.detail)}</td></tr>`;
+    const res = t.result==="SUCCESS" ? `<span class="res-ok">SUCCESS</span>` : `<span class="res-fail">${esc(t.reason.replace("_"," "))}</span>`;
+    return `<tr class="${t.attack?'atk':''}"><td>${et(t.ts,false)}</td><td>${esc(t.user)}</td><td>${esc(t.ip)}<br><span class="muted">${esc(t.asn)}</span></td><td>${esc(t.city)}</td><td>${esc(t.app)}</td><td>${res}<br><span class="muted">${esc(t.mfa)}</span></td><td>${esc(t.device)}</td></tr>`;
+  }).join("");
+  const bc = i.true_positive ? (i.before_compromise ? `<b class="good">Before compromise</b>` : `<b class="bad">At / after compromise</b>`) : "—";
+  $("detail").innerHTML = `
+    <div class="d-head"><div class="eyebrow">${i.id} · ${et(i.first)} to ${et(i.last,false)} ET</div>
+      <h3>${esc(i.title)}</h3><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="sev ${i.severity}">${i.severity}</span> ${rules}${i.privileged?' <span class="tag" style="color:var(--crit);background:var(--crit-bg)">privileged account</span>':''}</div></div>
+    <div class="facts">
+      <div><span>Risk score</span><b style="color:${sevColor(i.severity)}">${i.score} / 100</b></div>
+      <div><span>Accounts</span><b>${esc(i.users.join(", ")||"—")}</b></div>
+      <div><span>Time to detect</span><b>${i.ttd_min!=null? i.ttd_min+" min":"—"}</b></div>
+      <div><span>Detection</span>${bc}</div>
+    </div>
+    <div style="display:grid;gap:8px">
+      <div class="sec-head"><h3>Timeline</h3><div class="legend"><span><i style="background:var(--crit)"></i>Attacker event</span><span><i style="background:var(--accent-soft);outline:1px solid var(--accent)"></i>Alert fired</span></div></div>
+      <div class="timeline"><table><thead><tr><th>ET</th><th>Account</th><th>Source</th><th>Location</th><th>App</th><th>Result / MFA</th><th>Device</th></tr></thead><tbody>${rows}</tbody></table></div>
+    </div>
+    <div style="display:grid;gap:8px"><h3>Response playbook</h3><ol class="play">${i.playbook.map(p=>`<li>${esc(p)}</li>`).join("")}</ol></div>`;
+}
+renderQueue(); renderDetail();
+
+// tuning
+const order = ["IT","NC","LA","BS","MR","BF","DA","PS","PSS","MF"];
+const maxA = Math.max(...order.map(r=>D.v1.rules[r].alerts));
+const lw = n => n ? Math.max(Math.log10(n+1)/Math.log10(maxA+1)*100, 3) : 0;
+$("tune").innerHTML = order.map(r=>{
+  const a=D.v1.rules[r], b=D.v2.rules[r], m=D.rules[r];
+  const note = r==="PS" ? "v1 missed the rotating 4-IP spray completely. " : "";
+  return `<tr><td><b>${esc(m.name)}</b></td><td><span class="tag">${esc(m.technique)}</span></td>
+    <td><div class="vol" title="log scale"><div class="a" style="width:${lw(a.alerts)}%"></div><div class="b" style="width:${lw(b.alerts)}%"></div></div></td>
+    <td class="num">${a.alerts}<span class="arrow">→</span><b>${b.alerts}</b></td>
+    <td class="num">${a.fp}<span class="arrow">→</span><b>${b.fp}</b></td>
+    <td class="num">${pct(a.precision)}<span class="arrow">→</span><b class="good">${pct(b.precision)}</b></td>
+    <td class="lesson">${esc(note+m.tuning)}</td></tr>`;}).join("");
+
+// daily chart
+(function(){
+  const d=D.daily, n=d.labels.length, W=640, H=220, L=34, R=6, T=10, B=30;
+  const tot=d.labels.map((_,i)=>d.success[i]+d.failure[i]+d.attack[i]);
+  const max=Math.ceil(Math.max(...tot)/100)*100, y=v=>T+(H-T-B)*(1-v/max), step=(W-L-R)/n, bw=step*0.7;
+  let g="";
+  for(let v=0;v<=max;v+=100) g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-5}" y="${y(v)+3.5}" text-anchor="end">${v}</text>`;
+  d.labels.forEach((lab,i)=>{
+    const x=L+step*i+(step-bw)/2; let base=0;
+    [["success","var(--ok)"],["failure","var(--med)"],["attack","var(--crit)"]].forEach(([k,c])=>{
+      const v=d[k][i]; if(!v) return; g+=`<rect x="${x}" y="${y(base+v)}" width="${bw}" height="${y(base)-y(base+v)}" fill="${c}"><title>${lab} ${k}: ${v}</title></rect>`; base+=v; });
+    if(i%5===0) g+=`<text x="${x+bw/2}" y="${H-12}" text-anchor="middle">${lab}</text>`;
+  });
+  $("daily").innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:520px" role="img" aria-label="Sign-ins per day">${g}</svg>`;
+})();
+
+// heatmap
+(function(){
+  const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], mx=Math.max(...D.heat.flat());
+  let h=`<div class="l"></div>`+Array.from({length:24},(_,i)=>`<div class="l" style="justify-content:center">${i%6===0?i:""}</div>`).join("");
+  D.heat.forEach((row,wd)=>{ h+=`<div class="l">${days[wd]}</div>`+row.map((v,hr)=>{
+    const a = v ? 0.12+0.88*Math.sqrt(v/mx) : 0;
+    return `<div title="${days[wd]} ${hr}:00 ET · ${v} failures" style="background:${v?`color-mix(in srgb, var(--crit) ${Math.round(a*100)}%, var(--sunk))`:'var(--sunk)'}"></div>`;}).join(""); });
+  $("heat").innerHTML=h;
+})();
+
+// risk + sources
+$("risk").innerHTML = D.risk.map(r=>`<div class="rrow"><span><b class="mono">${esc(r.user)}</b> <small>${esc(r.title)}${r.privileged?" · privileged":""}</small></span><b class="mono" style="color:${r.score>=80?'var(--crit)':r.score>=50?'var(--high)':'var(--med)'}">${r.score}</b><div class="bar"><div style="width:${r.score}%;background:${r.score>=80?'var(--crit)':r.score>=50?'var(--high)':'var(--med)'}"></div></div></div>`).join("");
+const srcs=[...D.sources].sort((a,b)=>b.fail_rate-a.fail_rate);
+$("sources").innerHTML = srcs.map(s=>`<div class="rrow"><span><b class="mono">${esc(s.asn_type)}</b> <small>${s.events.toLocaleString()} sign-ins</small></span><b class="mono">${pct(s.fail_rate)}</b><div class="bar"><div style="width:${s.fail_rate*100}%;background:${s.fail_rate>.5?'var(--crit)':'var(--muted)'}"></div></div></div>`).join("");
+
+// attack coverage
+const cov = {"Initial Access":[["T1078","Valid Accounts"],["T1078.004","Cloud Accounts"]],
+  "Credential Access":[["T1110.001","Password Guessing"],["T1110.003","Password Spraying"],["T1621","MFA Request Generation"]],
+  "Persistence":[["T1098.005","Device Registration"],["T1078.004","Orphaned Accounts"]],
+  "Defense Evasion":[["T1078.004","Legacy Auth (MFA bypass)"],["T1550.004","Web Session Cookie"]]};
+$("attack").innerHTML = Object.entries(cov).map(([t,list])=>`<div class="tac"><h3>${t}</h3>${list.map(x=>`<div class="tech"><b>${x[0]}</b><span>${x[1]}</span></div>`).join("")}</div>`).join("");
+
+// rule library
+let rsel="PS", tsel="kql";
+const rids = ["BF","PS","PSS","IT","MF","LA","DA","NC","BS","MR"];
+function renderRules(){
+  $("rlist").innerHTML = rids.map(r=>`<button class="rbtn" role="tab" aria-selected="${r===rsel}" data-r="${r}"><b>${esc(D.rules[r].name)}</b><span>${esc(D.rules[r].technique)} · ${esc(D.rules[r].tactic)}</span></button>`).join("");
+  document.querySelectorAll(".rbtn").forEach(b=>b.onclick=()=>{rsel=b.dataset.r;renderRules();});
+  const m=D.rules[rsel];
+  $("rdetail").innerHTML = `<div style="display:grid;gap:6px"><h3 style="font-size:19px">${esc(m.name)}</h3>
+    <p><b>Logic.</b> ${esc(m.logic)}</p><p class="muted"><b>Tuning.</b> ${esc(m.tuning)}</p></div>
+    <div class="tabs" role="tablist">${[["kql","KQL · Sentinel"],["esql","ES|QL · Elastic"],["sigma","Sigma"]].map(([k,l])=>`<button class="tab" role="tab" aria-selected="${k===tsel}" data-t="${k}">${l}</button>`).join("")}</div>
+    <div class="code"><pre id="codepre">${esc(m[tsel])}</pre><button class="copy" id="copybtn">Copy</button></div>`;
+  document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{tsel=b.dataset.t;renderRules();});
+  $("copybtn").onclick = async ()=>{ const btn=$("copybtn");
+    try{ await navigator.clipboard.writeText(m[tsel]); btn.textContent="Copied"; }
+    catch(e){ const r=document.createRange(); r.selectNodeContents($("codepre")); const s=getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent="Selected"; }
+    setTimeout(()=>btn.textContent="Copy",1500); };
+}
+renderRules();
+</script>
