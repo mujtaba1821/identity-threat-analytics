@@ -1,0 +1,17 @@
+title: Brute Force Against Single Account
+id: 6f1e2a40-ita-bf
+status: experimental
+logsource: {product: azure, service: signinlogs}
+detection:
+  selection: {ResultType: 50126}   # invalid username or password
+  condition: selection
+---
+title: Brute Force Threshold
+correlation:
+  type: event_count
+  rules: [6f1e2a40-ita-bf]
+  group-by: [UserPrincipalName, IPAddress]
+  timespan: 10m
+  condition: {gte: 10}
+tags: [attack.credential-access, attack.t1110.001]
+level: high

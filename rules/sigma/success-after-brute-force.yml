@@ -1,0 +1,8 @@
+title: Successful Login After Failures
+correlation:
+  type: temporal_ordered
+  rules: [6f1e2a40-ita-bf, successful-signin]
+  group-by: [UserPrincipalName, IPAddress]
+  timespan: 30m
+tags: [attack.initial-access, attack.t1078]
+level: critical

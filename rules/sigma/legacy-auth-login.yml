@@ -1,0 +1,10 @@
+title: Legacy Authentication From External IP
+logsource: {product: azure, service: signinlogs}
+detection:
+  selection:
+    ResultType: 0
+    ClientAppUsed: [IMAP4, POP3, Authenticated SMTP, Exchange ActiveSync, Other clients]
+  filter_corp: {IPAddress|cidr: 198.51.100.0/24}
+  condition: selection and not filter_corp
+tags: [attack.defense-evasion, attack.t1078.004]
+level: high

@@ -1,0 +1,16 @@
+title: MFA Push Denied
+id: 9a0f4c22-ita-mf
+logsource: {product: azure, service: signinlogs}
+detection:
+  selection: {ResultType: 500121}
+  condition: selection
+---
+title: MFA Fatigue
+correlation:
+  type: event_count
+  rules: [9a0f4c22-ita-mf]
+  group-by: [UserPrincipalName]
+  timespan: 20m
+  condition: {gte: 5}
+tags: [attack.credential-access, attack.t1621]
+level: critical

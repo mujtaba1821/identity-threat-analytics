@@ -1,0 +1,8 @@
+title: MFA Method Registered From Hosting or Tor IP
+logsource: {product: azure, service: auditlogs}
+detection:
+  selection: {OperationName: User registered security info}
+  condition: selection
+tags: [attack.persistence, attack.t1098.005]
+level: high
+# enrich InitiatedBy.user.ipAddress with ASN type in the SIEM
