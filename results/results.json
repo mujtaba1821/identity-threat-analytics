@@ -1,0 +1,1920 @@
+{
+ "events": 8536,
+ "accounts": 107,
+ "days": 31,
+ "attack_events": 166,
+ "scenarios": 6,
+ "v1": {
+  "total": {
+   "alerts": 783,
+   "tp": 18,
+   "fp": 765,
+   "precision": 0.023
+  },
+  "rules": {
+   "BF": {
+    "alerts": 2,
+    "tp": 1,
+    "fp": 1,
+    "precision": 0.5
+   },
+   "PS": {
+    "alerts": 1,
+    "tp": 1,
+    "fp": 0,
+    "precision": 1.0
+   },
+   "PSS": {
+    "alerts": 1,
+    "tp": 1,
+    "fp": 0,
+    "precision": 1.0
+   },
+   "IT": {
+    "alerts": 676,
+    "tp": 4,
+    "fp": 672,
+    "precision": 0.006
+   },
+   "MF": {
+    "alerts": 1,
+    "tp": 1,
+    "fp": 0,
+    "precision": 1.0
+   },
+   "LA": {
+    "alerts": 21,
+    "tp": 1,
+    "fp": 20,
+    "precision": 0.048
+   },
+   "DA": {
+    "alerts": 2,
+    "tp": 1,
+    "fp": 1,
+    "precision": 0.5
+   },
+   "NC": {
+    "alerts": 64,
+    "tp": 6,
+    "fp": 58,
+    "precision": 0.094
+   },
+   "BS": {
+    "alerts": 8,
+    "tp": 1,
+    "fp": 7,
+    "precision": 0.125
+   },
+   "MR": {
+    "alerts": 7,
+    "tp": 1,
+    "fp": 6,
+    "precision": 0.143
+   }
+  },
+  "detected": 6
+ },
+ "v2": {
+  "total": {
+   "alerts": 19,
+   "tp": 19,
+   "fp": 0,
+   "precision": 1.0
+  },
+  "rules": {
+   "BF": {
+    "alerts": 1,
+    "tp": 1,
+    "fp": 0,
+    "precision": 1.0
+   },
+   "PS": {
+    "alerts": 2,
+    "tp": 2,
+    "fp": 0,
+    "precision": 1.0
+   },
+   "PSS": {
+    "alerts": 2,
+    "tp": 2,
+    "fp": 0,
+    "precision": 1.0
+   },
+   "IT": {
+    "alerts": 3,
+    "tp": 3,
+    "fp": 0,
+    "precision": 1.0
+   },
+   "MF": {
+    "alerts": 1,
+    "tp": 1,
+    "fp": 0,
+    "precision": 1.0
+   },
+   "LA": {
+    "alerts": 1,
+    "tp": 1,
+    "fp": 0,
+    "precision": 1.0
+   },
+   "DA": {
+    "alerts": 1,
+    "tp": 1,
+    "fp": 0,
+    "precision": 1.0
+   },
+   "NC": {
+    "alerts": 6,
+    "tp": 6,
+    "fp": 0,
+    "precision": 1.0
+   },
+   "BS": {
+    "alerts": 1,
+    "tp": 1,
+    "fp": 0,
+    "precision": 1.0
+   },
+   "MR": {
+    "alerts": 1,
+    "tp": 1,
+    "fp": 0,
+    "precision": 1.0
+   }
+  },
+  "detected": 6
+ },
+ "incidents": [
+  {
+   "id": "INC-001",
+   "title": "Brute-force takeover of d.okafor",
+   "severity": "Critical",
+   "score": 90,
+   "privileged": false,
+   "users": [
+    "d.okafor"
+   ],
+   "first": "2026-10-03 06:14:21",
+   "last": "2026-10-03 06:20:09",
+   "rules": [
+    "BF",
+    "NC",
+    "BS"
+   ],
+   "true_positive": true,
+   "scenario": "S1",
+   "ips": [
+    "198.18.44.17"
+   ],
+   "playbook": [
+    "Block the source IP at the IdP and firewall.",
+    "Confirm with the user out-of-band before restoring access.",
+    "Reset the password, revoke all sessions and refresh tokens."
+   ],
+   "timeline": [
+    {
+     "kind": "event",
+     "ts": "2026-10-03 06:13:00",
+     "user": "d.okafor",
+     "ip": "198.18.44.17",
+     "city": "Nuremberg, DE",
+     "asn": "tor",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "unknown-linux-firefox",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-03 06:13:09",
+     "user": "d.okafor",
+     "ip": "198.18.44.17",
+     "city": "Nuremberg, DE",
+     "asn": "tor",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "unknown-linux-firefox",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-03 06:13:18",
+     "user": "d.okafor",
+     "ip": "198.18.44.17",
+     "city": "Nuremberg, DE",
+     "asn": "tor",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "unknown-linux-firefox",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-03 06:13:27",
+     "user": "d.okafor",
+     "ip": "198.18.44.17",
+     "city": "Nuremberg, DE",
+     "asn": "tor",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "unknown-linux-firefox",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-03 06:13:36",
+     "user": "d.okafor",
+     "ip": "198.18.44.17",
+     "city": "Nuremberg, DE",
+     "asn": "tor",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "unknown-linux-firefox",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-03 06:13:45",
+     "user": "d.okafor",
+     "ip": "198.18.44.17",
+     "city": "Nuremberg, DE",
+     "asn": "tor",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "unknown-linux-firefox",
+     "attack": true
+    },
+    {
+     "kind": "gap",
+     "ts": "2026-10-03 06:13:54",
+     "count": 36
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-03 06:14:21",
+     "rule": "BF",
+     "severity": "High",
+     "detail": "46 wrong passwords in 10 min"
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-03 06:19:18",
+     "user": "d.okafor",
+     "ip": "198.18.44.17",
+     "city": "Nuremberg, DE",
+     "asn": "tor",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "unknown-linux-firefox",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-03 06:19:27",
+     "user": "d.okafor",
+     "ip": "198.18.44.17",
+     "city": "Nuremberg, DE",
+     "asn": "tor",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "unknown-linux-firefox",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-03 06:19:36",
+     "user": "d.okafor",
+     "ip": "198.18.44.17",
+     "city": "Nuremberg, DE",
+     "asn": "tor",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "unknown-linux-firefox",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-03 06:19:45",
+     "user": "d.okafor",
+     "ip": "198.18.44.17",
+     "city": "Nuremberg, DE",
+     "asn": "tor",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "unknown-linux-firefox",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-03 06:20:09",
+     "user": "d.okafor",
+     "ip": "198.18.44.17",
+     "city": "Nuremberg, DE",
+     "asn": "tor",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "not_required",
+     "device": "unknown-linux-firefox",
+     "attack": true
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-03 06:20:09",
+     "rule": "NC",
+     "severity": "High",
+     "detail": "New country DE on unseen device"
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-03 06:20:09",
+     "rule": "BS",
+     "severity": "Critical",
+     "detail": "Login succeeded after 46 failures"
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-03 06:32:00",
+     "user": "d.okafor",
+     "ip": "198.18.44.17",
+     "city": "Nuremberg, DE",
+     "asn": "tor",
+     "app": "SharePoint",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "not_required",
+     "device": "unknown-linux-firefox",
+     "attack": true
+    }
+   ],
+   "ttd_min": 1.4,
+   "before_compromise": true,
+   "compromised": [
+    "d.okafor"
+   ]
+  },
+  {
+   "id": "INC-002",
+   "title": "Low-and-slow password spray, account compromised + MFA persistence",
+   "severity": "Critical",
+   "score": 100,
+   "privileged": false,
+   "users": [
+    "t.nguyen"
+   ],
+   "first": "2026-10-08 03:22:09",
+   "last": "2026-10-08 12:12:01.590957",
+   "rules": [
+    "PS",
+    "PSS",
+    "NC",
+    "MR",
+    "IT"
+   ],
+   "true_positive": true,
+   "scenario": "S2",
+   "ips": [
+    "198.18.80.0/24",
+    "198.18.80.13",
+    "198.51.100.10"
+   ],
+   "playbook": [
+    "Block the spraying /24 and add it to the IdP network blocklist.",
+    "Reset the compromised account, revoke sessions, review mailbox rules and OAuth grants.",
+    "Confirm with the user out-of-band before restoring access.",
+    "Remove the attacker-registered MFA method; require re-enrollment in person or by video.",
+    "Revoke refresh tokens; enable token protection (device-bound sessions) for admins."
+   ],
+   "timeline": [
+    {
+     "kind": "event",
+     "ts": "2026-10-08 03:00:33",
+     "user": "a.abbott",
+     "ip": "198.18.80.11",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "python-requests",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 03:02:42",
+     "user": "j.evans",
+     "ip": "198.18.80.12",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "python-requests",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 03:05:03",
+     "user": "e.carter",
+     "ip": "198.18.80.13",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "python-requests",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 03:07:19",
+     "user": "n.rossi",
+     "ip": "198.18.80.14",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "python-requests",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 03:10:20",
+     "user": "p.lindqvist",
+     "ip": "198.18.80.11",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "python-requests",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 03:12:35",
+     "user": "b.nash",
+     "ip": "198.18.80.12",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "python-requests",
+     "attack": true
+    },
+    {
+     "kind": "gap",
+     "ts": "2026-10-08 03:14:41",
+     "count": 59
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-08 03:22:09",
+     "rule": "PS",
+     "severity": "High",
+     "detail": "69 accounts targeted from 4 IP(s)"
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 04:51:23",
+     "user": "t.nguyen",
+     "ip": "198.18.80.13",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "not_registered",
+     "device": "python-requests",
+     "attack": true
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-08 04:51:23",
+     "rule": "PSS",
+     "severity": "Critical",
+     "detail": "Login succeeded from spraying source"
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-08 04:51:23",
+     "rule": "NC",
+     "severity": "High",
+     "detail": "New country RO on unseen device"
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 04:57:23",
+     "user": "t.nguyen",
+     "ip": "198.18.80.13",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Security Info Registration",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "not_registered",
+     "device": "attacker-android",
+     "attack": true
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-08 04:57:23",
+     "rule": "MR",
+     "severity": "High",
+     "detail": "MFA method registered from hosting IP in Bucharest, RO"
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 05:00:23",
+     "user": "t.nguyen",
+     "ip": "198.18.80.13",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Salesforce",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "push_approved",
+     "device": "attacker-android",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 05:39:38",
+     "user": "a.upton",
+     "ip": "198.18.80.13",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "python-requests",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 05:42:35",
+     "user": "k.romano",
+     "ip": "198.18.80.14",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "python-requests",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 05:44:24",
+     "user": "f.park",
+     "ip": "198.18.80.11",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "python-requests",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 05:46:56",
+     "user": "r.alvarez",
+     "ip": "198.18.80.12",
+     "city": "Bucharest, RO",
+     "asn": "hosting",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "",
+     "device": "python-requests",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-08 12:12:01.590957",
+     "user": "t.nguyen",
+     "ip": "198.51.100.10",
+     "city": "Teaneck, NJ",
+     "asn": "corporate",
+     "app": "Jira",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "token",
+     "device": "t.nguyen-laptop",
+     "attack": false
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-08 12:12:01.590957",
+     "rule": "IT",
+     "severity": "Medium",
+     "detail": "Bucharest, RO to Teaneck, NJ in 432 min (1,062 km/h)"
+    }
+   ],
+   "ttd_min": 21.6,
+   "before_compromise": true,
+   "compromised": [
+    "t.nguyen"
+   ]
+  },
+  {
+   "id": "INC-003",
+   "title": "MFA fatigue takeover of m.reyes",
+   "severity": "Critical",
+   "score": 65,
+   "privileged": false,
+   "users": [
+    "m.reyes"
+   ],
+   "first": "2026-10-14 05:52:38",
+   "last": "2026-10-14 05:52:38",
+   "rules": [
+    "MF",
+    "NC"
+   ],
+   "true_positive": true,
+   "scenario": "S3",
+   "ips": [
+    "198.18.120.5"
+   ],
+   "playbook": [
+    "Revoke sessions, reset password, switch push MFA to number matching.",
+    "Confirm with the user out-of-band before restoring access."
+   ],
+   "timeline": [
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:38:00",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "mfa_denied",
+     "mfa": "push_denied",
+     "device": "unknown-win-edge",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:39:18",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "mfa_denied",
+     "mfa": "push_denied",
+     "device": "unknown-win-edge",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:40:36",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "mfa_denied",
+     "mfa": "push_denied",
+     "device": "unknown-win-edge",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:41:54",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "mfa_denied",
+     "mfa": "push_denied",
+     "device": "unknown-win-edge",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:43:12",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "mfa_denied",
+     "mfa": "push_denied",
+     "device": "unknown-win-edge",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:44:30",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "mfa_denied",
+     "mfa": "push_denied",
+     "device": "unknown-win-edge",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:45:48",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "mfa_denied",
+     "mfa": "push_denied",
+     "device": "unknown-win-edge",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:47:06",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "mfa_denied",
+     "mfa": "push_denied",
+     "device": "unknown-win-edge",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:48:24",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "mfa_denied",
+     "mfa": "push_denied",
+     "device": "unknown-win-edge",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:49:42",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "mfa_denied",
+     "mfa": "push_denied",
+     "device": "unknown-win-edge",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:51:00",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "FAILURE",
+     "reason": "mfa_denied",
+     "mfa": "push_denied",
+     "device": "unknown-win-edge",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:52:38",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "push_approved",
+     "device": "unknown-win-edge",
+     "attack": true
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-14 05:52:38",
+     "rule": "MF",
+     "severity": "Critical",
+     "detail": "Approved after 11 denied pushes"
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-14 05:52:38",
+     "rule": "NC",
+     "severity": "High",
+     "detail": "New country NL on unseen device"
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-14 05:59:00",
+     "user": "m.reyes",
+     "ip": "198.18.120.5",
+     "city": "Amsterdam, NL",
+     "asn": "hosting",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "token",
+     "device": "unknown-win-edge",
+     "attack": true
+    }
+   ],
+   "ttd_min": 14.6,
+   "before_compromise": false,
+   "compromised": [
+    "m.reyes"
+   ]
+  },
+  {
+   "id": "INC-004",
+   "title": "Session hijack of admin s.cohen",
+   "severity": "High",
+   "score": 52,
+   "privileged": true,
+   "users": [
+    "s.cohen"
+   ],
+   "first": "2026-10-17 14:29:00",
+   "last": "2026-10-17 14:29:00",
+   "rules": [
+    "IT",
+    "NC"
+   ],
+   "true_positive": true,
+   "scenario": "S4",
+   "ips": [
+    "198.18.150.9"
+   ],
+   "playbook": [
+    "Revoke refresh tokens; enable token protection (device-bound sessions) for admins.",
+    "Confirm with the user out-of-band before restoring access."
+   ],
+   "timeline": [
+    {
+     "kind": "event",
+     "ts": "2026-10-17 13:58:00",
+     "user": "s.cohen",
+     "ip": "198.51.100.10",
+     "city": "Teaneck, NJ",
+     "asn": "corporate",
+     "app": "Azure Portal",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "push_approved",
+     "device": "s.cohen-laptop",
+     "attack": false
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-17 14:29:00",
+     "user": "s.cohen",
+     "ip": "198.18.150.9",
+     "city": "Hanoi, VN",
+     "asn": "hosting",
+     "app": "AWS Console",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "token",
+     "device": "unknown-mac-chrome",
+     "attack": true
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-17 14:29:00",
+     "rule": "IT",
+     "severity": "Medium",
+     "detail": "Teaneck, NJ to Hanoi, VN in 31 min (25,413 km/h)"
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-17 14:29:00",
+     "rule": "NC",
+     "severity": "High",
+     "detail": "New country VN on unseen device"
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-17 14:41:00",
+     "user": "s.cohen",
+     "ip": "198.18.150.9",
+     "city": "Hanoi, VN",
+     "asn": "hosting",
+     "app": "Azure Portal",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "token",
+     "device": "unknown-mac-chrome",
+     "attack": true
+    }
+   ],
+   "ttd_min": 0.0,
+   "before_compromise": false,
+   "compromised": [
+    "s.cohen"
+   ]
+  },
+  {
+   "id": "INC-005",
+   "title": "Legacy IMAP spray bypassing MFA",
+   "severity": "Critical",
+   "score": 100,
+   "privileged": false,
+   "users": [
+    "r.alvarez"
+   ],
+   "first": "2026-10-20 08:14:15",
+   "last": "2026-10-20 12:42:40.583844",
+   "rules": [
+    "PS",
+    "PSS",
+    "LA",
+    "NC",
+    "IT"
+   ],
+   "true_positive": true,
+   "scenario": "S5",
+   "ips": [
+    "198.18.200.0/24",
+    "198.18.200.33",
+    "203.0.113.5"
+   ],
+   "playbook": [
+    "Block the spraying /24 and add it to the IdP network blocklist.",
+    "Reset the compromised account, revoke sessions, review mailbox rules and OAuth grants.",
+    "Disable legacy authentication tenant-wide with Conditional Access.",
+    "Confirm with the user out-of-band before restoring access.",
+    "Revoke refresh tokens; enable token protection (device-bound sessions) for admins."
+   ],
+   "timeline": [
+    {
+     "kind": "event",
+     "ts": "2026-10-20 08:00:00",
+     "user": "w.ali",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 08:01:35",
+     "user": "g.wade",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 08:03:10",
+     "user": "e.west",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 08:04:45",
+     "user": "e.lopez",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 08:06:20",
+     "user": "m.reyes",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 08:07:55",
+     "user": "f.park",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "gap",
+     "ts": "2026-10-20 08:09:30",
+     "count": 14
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-20 08:14:15",
+     "rule": "PS",
+     "severity": "High",
+     "detail": "24 accounts targeted from 1 IP(s)"
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 08:31:40",
+     "user": "r.alvarez",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-20 08:31:40",
+     "rule": "PSS",
+     "severity": "Critical",
+     "detail": "Login succeeded from spraying source"
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-20 08:31:40",
+     "rule": "LA",
+     "severity": "High",
+     "detail": "4 legacy-protocol logins (IMAP (legacy))"
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-20 08:31:40",
+     "rule": "NC",
+     "severity": "High",
+     "detail": "New country BR on unseen device"
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 08:33:15",
+     "user": "v.edwards",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 08:34:50",
+     "user": "b.xu",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 08:36:25",
+     "user": "g.moreno",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 08:38:00",
+     "user": "n.rossi",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "FAILURE",
+     "reason": "bad_password",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 08:51:40",
+     "user": "r.alvarez",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 09:11:40",
+     "user": "r.alvarez",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 09:31:40",
+     "user": "r.alvarez",
+     "ip": "198.18.200.33",
+     "city": "Sao Paulo, BR",
+     "asn": "hosting",
+     "app": "Exchange Online (IMAP)",
+     "client": "IMAP (legacy)",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "not_supported",
+     "device": "imap-client",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 12:42:40.583844",
+     "user": "r.alvarez",
+     "ip": "203.0.113.5",
+     "city": "Philadelphia, PA",
+     "asn": "residential",
+     "app": "Outlook",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "token",
+     "device": "r.alvarez-laptop",
+     "attack": false
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-20 12:42:40.583844",
+     "rule": "IT",
+     "severity": "Medium",
+     "detail": "Sao Paulo, BR to Philadelphia, PA in 191 min (2,405 km/h)"
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-20 13:17:40.988287",
+     "user": "r.alvarez",
+     "ip": "198.51.100.200",
+     "city": "Ashburn, VA",
+     "asn": "corporate-vpn",
+     "app": "Workday",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "push_approved",
+     "device": "r.alvarez-laptop",
+     "attack": false
+    }
+   ],
+   "ttd_min": 14.2,
+   "before_compromise": true,
+   "compromised": [
+    "r.alvarez"
+   ]
+  },
+  {
+   "id": "INC-006",
+   "title": "Terminated contractor account reused",
+   "severity": "Critical",
+   "score": 65,
+   "privileged": false,
+   "users": [
+    "k.walsh"
+   ],
+   "first": "2026-10-22 15:12:00",
+   "last": "2026-10-22 15:12:00",
+   "rules": [
+    "DA",
+    "NC"
+   ],
+   "true_positive": true,
+   "scenario": "S6",
+   "ips": [
+    "198.19.23.40"
+   ],
+   "playbook": [
+    "Disable the account, then audit offboarding: IdP deprovisioning failed.",
+    "Confirm with the user out-of-band before restoring access."
+   ],
+   "timeline": [
+    {
+     "kind": "event",
+     "ts": "2026-10-22 15:12:00",
+     "user": "k.walsh",
+     "ip": "198.19.23.40",
+     "city": "Toronto, CA",
+     "asn": "residential",
+     "app": "Salesforce",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "push_approved",
+     "device": "k.walsh-home-pc",
+     "attack": true
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-22 15:12:00",
+     "rule": "DA",
+     "severity": "Critical",
+     "detail": "Sign-in to account terminated 2026-10-01"
+    },
+    {
+     "kind": "alert",
+     "ts": "2026-10-22 15:12:00",
+     "rule": "NC",
+     "severity": "High",
+     "detail": "New country CA on unseen device"
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-22 15:26:00",
+     "user": "k.walsh",
+     "ip": "198.19.23.40",
+     "city": "Toronto, CA",
+     "asn": "residential",
+     "app": "Salesforce",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "push_approved",
+     "device": "k.walsh-home-pc",
+     "attack": true
+    },
+    {
+     "kind": "event",
+     "ts": "2026-10-22 15:40:00",
+     "user": "k.walsh",
+     "ip": "198.19.23.40",
+     "city": "Toronto, CA",
+     "asn": "residential",
+     "app": "SharePoint",
+     "client": "Browser",
+     "result": "SUCCESS",
+     "reason": "",
+     "mfa": "push_approved",
+     "device": "k.walsh-home-pc",
+     "attack": true
+    }
+   ],
+   "ttd_min": 0.0,
+   "before_compromise": false,
+   "compromised": [
+    "k.walsh"
+   ]
+  }
+ ],
+ "risk": [
+  {
+   "user": "t.nguyen",
+   "score": 100,
+   "title": "Account Executive (new hire)",
+   "dept": "Sales",
+   "privileged": false
+  },
+  {
+   "user": "r.alvarez",
+   "score": 100,
+   "title": "Paralegal",
+   "dept": "Legal",
+   "privileged": false
+  },
+  {
+   "user": "d.okafor",
+   "score": 90,
+   "title": "Senior Accountant",
+   "dept": "Finance",
+   "privileged": false
+  },
+  {
+   "user": "m.reyes",
+   "score": 65,
+   "title": "Chief Financial Officer",
+   "dept": "Finance",
+   "privileged": false
+  },
+  {
+   "user": "k.walsh",
+   "score": 65,
+   "title": "Contractor",
+   "dept": "Engineering",
+   "privileged": false
+  },
+  {
+   "user": "s.cohen",
+   "score": 52,
+   "title": "Systems Administrator",
+   "dept": "IT",
+   "privileged": true
+  }
+ ],
+ "daily": {
+  "labels": [
+   "09/26",
+   "09/27",
+   "09/28",
+   "09/29",
+   "09/30",
+   "10/01",
+   "10/02",
+   "10/03",
+   "10/04",
+   "10/05",
+   "10/06",
+   "10/07",
+   "10/08",
+   "10/09",
+   "10/10",
+   "10/11",
+   "10/12",
+   "10/13",
+   "10/14",
+   "10/15",
+   "10/16",
+   "10/17",
+   "10/18",
+   "10/19",
+   "10/20",
+   "10/21",
+   "10/22",
+   "10/23",
+   "10/24",
+   "10/25",
+   "10/26"
+  ],
+  "success": [
+   33,
+   44,
+   376,
+   359,
+   351,
+   362,
+   369,
+   32,
+   42,
+   371,
+   377,
+   374,
+   362,
+   377,
+   30,
+   23,
+   379,
+   370,
+   369,
+   374,
+   374,
+   40,
+   39,
+   386,
+   397,
+   362,
+   369,
+   401,
+   51,
+   31,
+   3
+  ],
+  "failure": [
+   1,
+   3,
+   23,
+   17,
+   25,
+   104,
+   21,
+   2,
+   4,
+   27,
+   20,
+   26,
+   25,
+   26,
+   1,
+   0,
+   19,
+   33,
+   19,
+   12,
+   21,
+   5,
+   0,
+   18,
+   27,
+   27,
+   27,
+   21,
+   3,
+   2,
+   0
+  ],
+  "attack": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   48,
+   0,
+   0,
+   0,
+   0,
+   72,
+   0,
+   0,
+   0,
+   0,
+   0,
+   13,
+   0,
+   0,
+   2,
+   0,
+   0,
+   28,
+   0,
+   3,
+   0,
+   0,
+   0,
+   0
+  ]
+ },
+ "heat": [
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   7,
+   8,
+   7,
+   5,
+   8,
+   10,
+   9,
+   5,
+   6,
+   8,
+   9,
+   2,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   24,
+   0,
+   0,
+   0,
+   5,
+   24,
+   6,
+   10,
+   12,
+   5,
+   6,
+   7,
+   9,
+   9,
+   4,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   11,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   5,
+   12,
+   9,
+   6,
+   14,
+   9,
+   9,
+   9,
+   5,
+   7,
+   10,
+   2,
+   0,
+   0,
+   0,
+   25
+  ],
+  [
+   24,
+   20,
+   0,
+   0,
+   0,
+   0,
+   0,
+   2,
+   6,
+   18,
+   26,
+   14,
+   5,
+   17,
+   24,
+   9,
+   16,
+   15,
+   11,
+   5,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   9,
+   10,
+   12,
+   7,
+   6,
+   7,
+   6,
+   10,
+   8,
+   8,
+   6,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   46,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   5,
+   2,
+   0,
+   2,
+   2,
+   1,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   1,
+   3,
+   1,
+   1,
+   0,
+   0,
+   0,
+   0,
+   1,
+   2,
+   1,
+   0,
+   0
+  ]
+ ],
+ "sources": [
+  {
+   "asn_type": "corporate",
+   "events": 3280,
+   "fail_rate": 0.065
+  },
+  {
+   "asn_type": "corporate-vpn",
+   "events": 1524,
+   "fail_rate": 0.066
+  },
+  {
+   "asn_type": "hosting",
+   "events": 115,
+   "fail_rate": 0.904
+  },
+  {
+   "asn_type": "mobile",
+   "events": 305,
+   "fail_rate": 0.072
+  },
+  {
+   "asn_type": "residential",
+   "events": 3264,
+   "fail_rate": 0.068
+  },
+  {
+   "asn_type": "tor",
+   "events": 48,
+   "fail_rate": 0.958
+  }
+ ],
+ "rules": {
+  "BF": {
+   "name": "Brute Force",
+   "technique": "T1110.001",
+   "tactic": "Credential Access",
+   "logic": "10+ wrong passwords for one account from one IP within 10 minutes.",
+   "tuning": "Corporate egress IPs need 25+ failures. Office lockouts were the only false positives.",
+   "sigma": "title: Brute Force Against Single Account\nid: 6f1e2a40-ita-bf\nstatus: experimental\nlogsource: {product: azure, service: signinlogs}\ndetection:\n  selection: {ResultType: 50126}   # invalid username or password\n  condition: selection\n---\ntitle: Brute Force Threshold\ncorrelation:\n  type: event_count\n  rules: [6f1e2a40-ita-bf]\n  group-by: [UserPrincipalName, IPAddress]\n  timespan: 10m\n  condition: {gte: 10}\ntags: [attack.credential-access, attack.t1110.001]\nlevel: high",
+   "kql": "SigninLogs\n| where ResultType == 50126\n| summarize Failures = count(), First = min(TimeGenerated)\n    by UserPrincipalName, IPAddress, bin(TimeGenerated, 10m)\n| extend IsCorp = ipv4_is_in_any_range(IPAddress, dynamic([\"198.51.100.0/24\"]))\n| where (IsCorp and Failures >= 25) or (not(IsCorp) and Failures >= 10)",
+   "esql": "FROM logs-okta.system-*\n| WHERE event.action == \"user.session.start\" AND event.outcome == \"failure\"\n    AND okta.outcome.reason == \"INVALID_CREDENTIALS\"\n| EVAL bucket = DATE_TRUNC(10 minutes, @timestamp)\n| STATS failures = COUNT(*) BY user.name, source.ip, bucket\n| WHERE failures >= 10"
+  },
+  "PS": {
+   "name": "Password Spraying",
+   "technique": "T1110.003",
+   "tactic": "Credential Access",
+   "logic": "One external /24 subnet fails against 10+ distinct accounts within 3 hours, with 80%+ of its sign-ins failing.",
+   "tuning": "v1 grouped by single IP and missed a spray rotated across 4 IPs. Grouping by /24 caught it; excluding corporate egress removed password-expiry noise.",
+   "sigma": "title: Password Spray Failure\nid: 2b7c9d11-ita-ps\nlogsource: {product: azure, service: signinlogs}\ndetection:\n  selection: {ResultType: 50126}\n  filter_corp: {IPAddress|cidr: 198.51.100.0/24}\n  condition: selection and not filter_corp\n---\ntitle: Password Spray Distinct Accounts\ncorrelation:\n  type: value_count\n  rules: [2b7c9d11-ita-ps]\n  group-by: [IPAddress]\n  timespan: 3h\n  condition: {field: UserPrincipalName, gte: 10}\ntags: [attack.credential-access, attack.t1110.003]\nlevel: high",
+   "kql": "SigninLogs\n| where not(ipv4_is_in_any_range(IPAddress, dynamic([\"198.51.100.0/24\"])))\n| extend Subnet = format_ipv4_mask(IPAddress, 24)\n| summarize Accounts = dcountif(UserPrincipalName, ResultType == 50126),\n            FailRatio = countif(ResultType != 0) * 1.0 / count(),\n            IPs = make_set(IPAddress), Hits = make_set_if(UserPrincipalName, ResultType == 0)\n    by Subnet, bin(TimeGenerated, 3h)\n| where Accounts >= 10 and FailRatio >= 0.8",
+   "esql": "FROM logs-okta.system-*\n| WHERE event.action == \"user.session.start\"\n| EVAL subnet = CONCAT(SUBSTRING(TO_STRING(source.ip), 0, LOCATE(TO_STRING(source.ip), \".\", 9)), \".0/24\")\n| STATS accounts = COUNT_DISTINCT(user.name), fails = COUNT(event.outcome == \"failure\" OR NULL), total = COUNT(*)\n    BY subnet, bucket = DATE_TRUNC(3 hours, @timestamp)\n| WHERE accounts >= 10 AND fails * 1.0 / total >= 0.8"
+  },
+  "PSS": {
+   "name": "Spray Success",
+   "technique": "T1110.003 \u2192 T1078",
+   "tactic": "Initial Access",
+   "logic": "Any successful sign-in from a source that is password spraying. The spray worked.",
+   "tuning": "Escalation of Password Spraying; inherits its tuning.",
+   "sigma": "# Expressed as a join on the spray correlation output (see KQL).",
+   "kql": "let Sprayers = SigninLogs\n| extend Subnet = format_ipv4_mask(IPAddress, 24)\n| summarize Accounts = dcountif(UserPrincipalName, ResultType == 50126) by Subnet\n| where Accounts >= 10;\nSigninLogs\n| where ResultType == 0\n| extend Subnet = format_ipv4_mask(IPAddress, 24)\n| join kind=inner Sprayers on Subnet",
+   "esql": "# Run Password Spraying, then FROM logs-okta.system-* | WHERE event.outcome == \"success\" AND source.ip IN (<spraying IPs>)"
+  },
+  "IT": {
+   "name": "Impossible Travel",
+   "technique": "T1078.004",
+   "tactic": "Initial Access",
+   "logic": "Consecutive successful sign-ins whose distance over time needs more than 900 km/h.",
+   "tuning": "Skip pairs involving the corporate VPN (Frankfurt exit node) or mobile carrier IPs, whose geolocation reflects the carrier hub, not the user.",
+   "sigma": "# Stateful (needs previous event per user). Use the KQL / ES|QL versions.",
+   "kql": "SigninLogs\n| where ResultType == 0\n| where not(ipv4_is_in_any_range(IPAddress, dynamic([\"198.51.100.200/31\",\"100.64.0.0/10\"])))\n| extend Lat = toreal(LocationDetails.geoCoordinates.latitude), Lon = toreal(LocationDetails.geoCoordinates.longitude)\n| sort by UserPrincipalName asc, TimeGenerated asc\n| extend PrevLat = prev(Lat), PrevLon = prev(Lon), PrevTime = prev(TimeGenerated), PrevUser = prev(UserPrincipalName)\n| where UserPrincipalName == PrevUser\n| extend Km = geo_distance_2points(Lon, Lat, PrevLon, PrevLat) / 1000,\n         Hours = max_of(datetime_diff('minute', TimeGenerated, PrevTime), 1) / 60.0\n| where Km / Hours > 900",
+   "esql": "# ES|QL has no row-lag function yet; use the Elastic 'Impossible Travel' ML job or an EQL sequence by user.name."
+  },
+  "MF": {
+   "name": "MFA Fatigue",
+   "technique": "T1621",
+   "tactic": "Credential Access",
+   "logic": "An MFA push is approved after 5+ denied pushes for the same user in 20 minutes.",
+   "tuning": "No tuning needed. Accidental single denials never reach 5.",
+   "sigma": "title: MFA Push Denied\nid: 9a0f4c22-ita-mf\nlogsource: {product: azure, service: signinlogs}\ndetection:\n  selection: {ResultType: 500121}\n  condition: selection\n---\ntitle: MFA Fatigue\ncorrelation:\n  type: event_count\n  rules: [9a0f4c22-ita-mf]\n  group-by: [UserPrincipalName]\n  timespan: 20m\n  condition: {gte: 5}\ntags: [attack.credential-access, attack.t1621]\nlevel: critical",
+   "kql": "let Denials = SigninLogs\n| where ResultType == 500121\n| summarize Denied = count(), LastDeny = max(TimeGenerated) by UserPrincipalName, bin(TimeGenerated, 20m)\n| where Denied >= 5;\nSigninLogs\n| where ResultType == 0 and AuthenticationRequirement == \"multiFactorAuthentication\"\n| join kind=inner Denials on UserPrincipalName\n| where TimeGenerated between (LastDeny .. LastDeny + 10m)",
+   "esql": "FROM logs-okta.system-*\n| WHERE event.action == \"user.mfa.okta_verify.deny_push\"\n| STATS denied = COUNT(*) BY user.name, bucket = DATE_TRUNC(20 minutes, @timestamp)\n| WHERE denied >= 5"
+  },
+  "LA": {
+   "name": "Legacy Auth Login",
+   "technique": "T1078.004",
+   "tactic": "Defense Evasion",
+   "logic": "Successful IMAP/POP/SMTP basic-auth sign-in from a non-corporate IP. Legacy protocols cannot do MFA.",
+   "tuning": "v1 alerted on the scan-to-email service account every day. Restricting to external IPs removed it.",
+   "sigma": "title: Legacy Authentication From External IP\nlogsource: {product: azure, service: signinlogs}\ndetection:\n  selection:\n    ResultType: 0\n    ClientAppUsed: [IMAP4, POP3, Authenticated SMTP, Exchange ActiveSync, Other clients]\n  filter_corp: {IPAddress|cidr: 198.51.100.0/24}\n  condition: selection and not filter_corp\ntags: [attack.defense-evasion, attack.t1078.004]\nlevel: high",
+   "kql": "SigninLogs\n| where ResultType == 0\n| where ClientAppUsed in (\"IMAP4\",\"POP3\",\"Authenticated SMTP\",\"Exchange ActiveSync\",\"Other clients\")\n| where not(ipv4_is_in_any_range(IPAddress, dynamic([\"198.51.100.0/24\"])))",
+   "esql": "FROM logs-o365.audit-*\n| WHERE event.outcome == \"success\" AND o365.audit.ExtendedProperties.UserAgent RLIKE \".*(IMAP|POP|SMTP).*\"\n    AND NOT CIDR_MATCH(source.ip, \"198.51.100.0/24\")"
+  },
+  "DA": {
+   "name": "Terminated / Dormant Account",
+   "technique": "T1078.004",
+   "tactic": "Persistence",
+   "logic": "Any sign-in to an account HR lists as terminated, or the first sign-in after 30+ quiet days.",
+   "tuning": "v1 used a 14-day gap and flagged an employee back from leave. Joining the HR directory gives a precise signal.",
+   "sigma": "# Requires an HR/IdP directory lookup; see KQL with a watchlist.",
+   "kql": "let Terminated = _GetWatchlist('TerminatedUsers') | project UserPrincipalName = SearchKey, EndDate = todatetime(EndDate);\nSigninLogs\n| where ResultType == 0\n| join kind=inner Terminated on UserPrincipalName\n| where TimeGenerated > EndDate",
+   "esql": "FROM logs-okta.system-*\n| WHERE event.outcome == \"success\"\n| ENRICH hr-terminated-users ON user.name WITH end_date\n| WHERE end_date IS NOT NULL AND @timestamp > end_date"
+  },
+  "NC": {
+   "name": "New Country + New Device",
+   "technique": "T1078",
+   "tactic": "Initial Access",
+   "logic": "Successful sign-in from a country never seen for this user, on a device never seen for this user.",
+   "tuning": "v1 used new country alone and flagged every business trip and VPN exit. Travelers bring their own laptop, attackers do not. New hires with no history are skipped.",
+   "sigma": "# Stateful baseline per user; see KQL.",
+   "kql": "let Baseline = SigninLogs\n| where TimeGenerated between (ago(30d) .. ago(1d)) and ResultType == 0\n| summarize Countries = make_set(tostring(LocationDetails.countryOrRegion)),\n            Devices = make_set(tostring(DeviceDetail.deviceId)) by UserPrincipalName;\nSigninLogs\n| where TimeGenerated > ago(1d) and ResultType == 0\n| join kind=inner Baseline on UserPrincipalName\n| where not(set_has_element(Countries, tostring(LocationDetails.countryOrRegion)))\n    and not(set_has_element(Devices, tostring(DeviceDetail.deviceId)))",
+   "esql": "# Use the Elastic 'New Terms' rule type on [user.name, source.geo.country_iso_code, okta.device.id]."
+  },
+  "BS": {
+   "name": "Success After Brute Force",
+   "technique": "T1110 \u2192 T1078",
+   "tactic": "Initial Access",
+   "logic": "10+ failures from one external IP followed by a successful login for the same account within 30 minutes.",
+   "tuning": "v1 grouped by account only and fired when users fixed their own expired passwords. Requiring the same external IP removed that.",
+   "sigma": "title: Successful Login After Failures\ncorrelation:\n  type: temporal_ordered\n  rules: [6f1e2a40-ita-bf, successful-signin]\n  group-by: [UserPrincipalName, IPAddress]\n  timespan: 30m\ntags: [attack.initial-access, attack.t1078]\nlevel: critical",
+   "kql": "SigninLogs\n| where not(ipv4_is_in_any_range(IPAddress, dynamic([\"198.51.100.0/24\"])))\n| summarize Fails = countif(ResultType == 50126), Success = countif(ResultType == 0),\n            FirstOk = minif(TimeGenerated, ResultType == 0), LastFail = maxif(TimeGenerated, ResultType == 50126)\n    by UserPrincipalName, IPAddress, bin(TimeGenerated, 30m)\n| where Fails >= 10 and Success > 0 and FirstOk > LastFail",
+   "esql": "FROM logs-okta.system-* METADATA _id\n| WHERE event.action == \"user.session.start\"\n| STATS fails = COUNT(event.outcome == \"failure\" OR NULL), oks = COUNT(event.outcome == \"success\" OR NULL)\n    BY user.name, source.ip, bucket = DATE_TRUNC(30 minutes, @timestamp)\n| WHERE fails >= 10 AND oks > 0"
+  },
+  "MR": {
+   "name": "Risky MFA Registration",
+   "technique": "T1098.005",
+   "tactic": "Persistence",
+   "logic": "A new MFA method is registered from a hosting-provider or Tor IP.",
+   "tuning": "v1 flagged any registration outside the office, which caught employees setting up new phones at home.",
+   "sigma": "title: MFA Method Registered From Hosting or Tor IP\nlogsource: {product: azure, service: auditlogs}\ndetection:\n  selection: {OperationName: User registered security info}\n  condition: selection\ntags: [attack.persistence, attack.t1098.005]\nlevel: high\n# enrich InitiatedBy.user.ipAddress with ASN type in the SIEM",
+   "kql": "AuditLogs\n| where OperationName == \"User registered security info\"\n| extend IP = tostring(InitiatedBy.user.ipAddress)\n| join kind=inner (ThreatIntelligenceIndicator | where Tags has_any (\"hosting\",\"tor\") | project IP = NetworkIP) on IP",
+   "esql": "FROM logs-okta.system-*\n| WHERE event.action == \"user.mfa.factor.activate\"\n    AND (source.as.organization.name RLIKE \".*(Hosting|Cloud|VPS).*\" OR okta.security_context.is_proxy == true)"
+  }
+ }
+}
