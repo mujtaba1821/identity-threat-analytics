@@ -1,0 +1,6 @@
+// Legacy Auth Login (T1078.004)
+// Successful IMAP/POP/SMTP basic-auth sign-in from a non-corporate IP. Legacy protocols cannot do MFA.
+SigninLogs
+| where ResultType == 0
+| where ClientAppUsed in ("IMAP4","POP3","Authenticated SMTP","Exchange ActiveSync","Other clients")
+| where not(ipv4_is_in_any_range(IPAddress, dynamic(["198.51.100.0/24"])))

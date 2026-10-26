@@ -1,0 +1,6 @@
+// Risky MFA Registration (T1098.005)
+// A new MFA method is registered from a hosting-provider or Tor IP.
+AuditLogs
+| where OperationName == "User registered security info"
+| extend IP = tostring(InitiatedBy.user.ipAddress)
+| join kind=inner (ThreatIntelligenceIndicator | where Tags has_any ("hosting","tor") | project IP = NetworkIP) on IP

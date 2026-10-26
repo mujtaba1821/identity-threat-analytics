@@ -1,0 +1,10 @@
+// MFA Fatigue (T1621)
+// An MFA push is approved after 5+ denied pushes for the same user in 20 minutes.
+let Denials = SigninLogs
+| where ResultType == 500121
+| summarize Denied = count(), LastDeny = max(TimeGenerated) by UserPrincipalName, bin(TimeGenerated, 20m)
+| where Denied >= 5;
+SigninLogs
+| where ResultType == 0 and AuthenticationRequirement == "multiFactorAuthentication"
+| join kind=inner Denials on UserPrincipalName
+| where TimeGenerated between (LastDeny .. LastDeny + 10m)

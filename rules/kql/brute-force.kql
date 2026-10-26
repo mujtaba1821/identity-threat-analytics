@@ -1,0 +1,8 @@
+// Brute Force (T1110.001)
+// 10+ wrong passwords for one account from one IP within 10 minutes.
+SigninLogs
+| where ResultType == 50126
+| summarize Failures = count(), First = min(TimeGenerated)
+    by UserPrincipalName, IPAddress, bin(TimeGenerated, 10m)
+| extend IsCorp = ipv4_is_in_any_range(IPAddress, dynamic(["198.51.100.0/24"]))
+| where (IsCorp and Failures >= 25) or (not(IsCorp) and Failures >= 10)

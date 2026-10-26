@@ -1,0 +1,11 @@
+// New Country + New Device (T1078)
+// Successful sign-in from a country never seen for this user, on a device never seen for this user.
+let Baseline = SigninLogs
+| where TimeGenerated between (ago(30d) .. ago(1d)) and ResultType == 0
+| summarize Countries = make_set(tostring(LocationDetails.countryOrRegion)),
+            Devices = make_set(tostring(DeviceDetail.deviceId)) by UserPrincipalName;
+SigninLogs
+| where TimeGenerated > ago(1d) and ResultType == 0
+| join kind=inner Baseline on UserPrincipalName
+| where not(set_has_element(Countries, tostring(LocationDetails.countryOrRegion)))
+    and not(set_has_element(Devices, tostring(DeviceDetail.deviceId)))

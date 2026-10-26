@@ -1,0 +1,12 @@
+// Impossible Travel (T1078.004)
+// Consecutive successful sign-ins whose distance over time needs more than 900 km/h.
+SigninLogs
+| where ResultType == 0
+| where not(ipv4_is_in_any_range(IPAddress, dynamic(["198.51.100.200/31","100.64.0.0/10"])))
+| extend Lat = toreal(LocationDetails.geoCoordinates.latitude), Lon = toreal(LocationDetails.geoCoordinates.longitude)
+| sort by UserPrincipalName asc, TimeGenerated asc
+| extend PrevLat = prev(Lat), PrevLon = prev(Lon), PrevTime = prev(TimeGenerated), PrevUser = prev(UserPrincipalName)
+| where UserPrincipalName == PrevUser
+| extend Km = geo_distance_2points(Lon, Lat, PrevLon, PrevLat) / 1000,
+         Hours = max_of(datetime_diff('minute', TimeGenerated, PrevTime), 1) / 60.0
+| where Km / Hours > 900

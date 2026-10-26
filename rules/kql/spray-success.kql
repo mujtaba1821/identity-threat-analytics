@@ -1,0 +1,10 @@
+// Spray Success (T1110.003 → T1078)
+// Any successful sign-in from a source that is password spraying. The spray worked.
+let Sprayers = SigninLogs
+| extend Subnet = format_ipv4_mask(IPAddress, 24)
+| summarize Accounts = dcountif(UserPrincipalName, ResultType == 50126) by Subnet
+| where Accounts >= 10;
+SigninLogs
+| where ResultType == 0
+| extend Subnet = format_ipv4_mask(IPAddress, 24)
+| join kind=inner Sprayers on Subnet

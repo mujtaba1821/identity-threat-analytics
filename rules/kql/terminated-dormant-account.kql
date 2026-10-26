@@ -1,0 +1,7 @@
+// Terminated / Dormant Account (T1078.004)
+// Any sign-in to an account HR lists as terminated, or the first sign-in after 30+ quiet days.
+let Terminated = _GetWatchlist('TerminatedUsers') | project UserPrincipalName = SearchKey, EndDate = todatetime(EndDate);
+SigninLogs
+| where ResultType == 0
+| join kind=inner Terminated on UserPrincipalName
+| where TimeGenerated > EndDate

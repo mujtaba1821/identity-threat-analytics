@@ -1,0 +1,8 @@
+// Success After Brute Force (T1110 → T1078)
+// 10+ failures from one external IP followed by a successful login for the same account within 30 minutes.
+SigninLogs
+| where not(ipv4_is_in_any_range(IPAddress, dynamic(["198.51.100.0/24"])))
+| summarize Fails = countif(ResultType == 50126), Success = countif(ResultType == 0),
+            FirstOk = minif(TimeGenerated, ResultType == 0), LastFail = maxif(TimeGenerated, ResultType == 50126)
+    by UserPrincipalName, IPAddress, bin(TimeGenerated, 30m)
+| where Fails >= 10 and Success > 0 and FirstOk > LastFail
